@@ -1,0 +1,173 @@
+运算符重载：
+作用：让自定义的类生成的对象（实例）能够使用运算符进行操作
+     让自定义的实例对象进行数学表达式运算操作，让程序简洁易读
++ - * > < .....
+
+思考：
+class MyNumber:
+    pass
+
+n1 = MyNumber()
+n2 = MyNumber()
+n3 = n1 + n2 # 此时不能这样操作
+
+算数运算符的重载：
+__add__ 加法+
+__sub__ 减法-
+__mul__ 乘法*
+__truediv__ 除法 /
+__floordiv__ 地板除 //
+__mod__ 求余（取模）%
+__pow__ 幂 **
+
+二元运算符的重载格式：
+def __xxx__(self, other):
+    ....
+注：二元运算符的重载方法参数列表只能有两个参数
+
+练习：实现两个自定义列表的相加
+class MyList:
+    ... 此处自己实现
+L1 = MyList([1,2,3])
+L2 = MyList([4,5,6])
+L3 = L1 + L2
+print(L3)
+L3 = L2 + L1
+print(L3)
+
+反向算数运算符重载：
+__radd__(self, lhs) 加法 lhs + self
+__rsub__(self, lhs) 减法 lhs - self
+__rmul__(self, lhs) 乘法 lhs * self
+__rtruediv__(self, lhs) 除法 lhs / self
+__rfloordiv__(self, lhs) 地板除法 lhs // self
+__rmod__(self, lhs) 取模 lhs % self
+__rpow__(self, lhs) 幂 lhs ** self
+
+复合运算符重载：
+__iadd__(self, lhs) 加法 lhs += self
+__isub__(self, lhs) 减法 lhs -= self
+__imul__(self, lhs) 乘法 lhs *= self
+__itruediv__(self, lhs) 除法 lhs /= self
+__ifloordiv__(self, lhs) 地板除法 lhs //= self
+__imod__(self, lhs) 取模 lhs %= self
+__ipow__(self, lhs) 幂 lhs **= self
+
+比较运算符的重载：
+__lt__ 小于 <
+__le__ 小于等于 <=
+__gt__ 大于 >
+__ge__ 大于等于 >=
+__eq__ 等于 ==
+__ne__ 不等于 !=
+注：比较运算符通返回布尔类型 如果自己写的话六个必须都要实现一遍
+
+位运算符：
+__invert__   取反 ～（一元运算符）
+__and__      位与 &
+__or__       位或 |
+__xor__      位异或 ^
+__lshift__   左移 <<
+__rshift__   右移 >>
+
+反向位运算符：
+__rand__      位与 &
+__ror__       位或 |
+__rxor__      位异或 ^
+__rlshift__   左移 <<
+__rrshift__   右移 >>
+
+复合赋值位运算符重载：
+__iand__      位与 &=
+__ior__       位或 |=
+__ixor__      位异或 ^=
+__ilshift__   左移 <<=
+__irshift__   右移 >>=
+
+
+一元运算符的重载：
+__neg__ 负号-
+__pos__ 正号+
+__invert__ 取反～
+重载方法格式：
+def __XXX__(self):
+    ....
+
+in/not in 运算符重符
+格式：
+def __init__(self, lst):
+    .....
+
+索引和切片运算符重载
+承载方法：
+def __getitem__(self, i): # 用索引或切片取值
+    ....
+def __setitem__(self, i, value): 设置索引或切片的值
+    ....
+def __delitem__(self, i): 用于del语句删索引操作
+    ....
+作用：让自定义的类能够支持索引和切片
+
+总结：
++ - * / // % = += -=.....
+> < >= <= == !=
+& | ^ << >> &= |= ^=
+in/not in   __contains__
+[] __setitem__ / __getitem__ / __delitem__
++ - ~
+
+异常（高级）
+with 语句
+语法：with 表达式1 [as 变量1] , 表达式2[as 变量2],.......
+        语句块
+作用：用于对资源进行访问的场合，确保使用过程中不管是否发生异常，都会执行必须的“清理”操作
+     并释放资源
+     例如：
+     文件使用后关闭，线程中锁的自动获取和释放等
+语法说明：1、执行表达式1 和 表达式2等，用as子句中的变量绑定生成的对象，然后进入with语句内执行语句块
+        2、with 语句并不改变异常的状态
+
+练习：实现文件的赋值
+     要求用with语句和try语句并用来处理异常
+
+环境管理器：
+1、类内有__enter__和__exit__方法的类被称为环境管理器
+2、能够用with语句进行管理的对象必须是环境管理器
+3、__enter__将在进入with语句时被调用，并返回由as变量管理的对象
+4、__exit__将在离开with语句时被调用，且可以用参数来判断离开with语句时是否有异常发生并做出相应的处理
+
+中文帮助手册
+    http://usyiyi.cn
+
+练习：
+1、把学生管理系统整理为模块
+   用with语句打开和读写文件
+2、写一个类，实现迭代器协议，让此类可以生成前n个斐波那契数
+class Fibonacci:
+    def __init__(self, n):
+        ....
+
+L = [x for x in Fibonacci(6)]
+print(L)
+for x in Fibonacci(8):
+    print(x)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

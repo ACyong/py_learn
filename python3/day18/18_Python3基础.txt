@@ -1,0 +1,192 @@
+1、函数重写 overwrite
+    函数重写是指让自定的类生成的对象能够使用内建(builtin)的函数进行操作
+        len, bool, int, float, complex, str, repr, abs
+
+    对象转字符串函数的重写
+        repr(obj) 返回一个能代表此对象的表达式字符串，通常：eval(repr(obj))==obj 为True（给机器看的字符串）
+        str(obj) 通过给定的对象返回一个字符串（这个字符串通常是给人阅读的）
+
+    重写方法：
+        repr() 函数的重写方法：
+            class xxxx:
+                def __repr__(self):
+                    return 字符串
+        str() 函数的重写方法：
+            class xxxx:
+                def __str__(seld):
+                    return 字符串
+        注：一个对象没有__str__(self)方法，则返回repr(obj)函数的结果
+
+    内建函数重写与对应方法：
+        abs(obj)    =====> def __abs__(self):
+        len(obj)    =====> def __len__(self):
+        reverse(obj)=====> def __reverse__(self):
+        round(obj)  =====> def __round__(self):
+
+    数值转换函数重写：
+        complex(obj) ======> def __complex__(self):
+        int(obj)     ======> def __int__(self):
+        float(obj)   ======> def __float__(self):
+        bool(obj)    ======> def __bool__(self):
+
+    自己写一个MyList类实现类似list类的功能
+    class MyList:
+        def __init__(self, iterable):
+            self.data = [x for x in iterable]
+
+        def __repr__(self):
+            return "MyList(%r)" % self.data
+
+        def __bool__(self):
+            """如果列表中有数据测试位真，则返回True"""
+            for x in self.data:
+                if x:
+                    return True
+            return False
+
+    # L1 = MyList(range(10))
+    # L1 = MyList([None, False, []])
+    L1 = MyList([None, False, [None]])
+    print(L1)
+    print(bool(L1))
+
+    if L1:
+        print("L1为真")
+    else:
+        print("L1位假")
+
+    L2 = MyList("")
+    print("L2 = ", L2)
+
+
+2、bool(obj) 函数重写：
+    作用：1、用于bool(obj)函数取值
+         2、用于if语句的真值表达式中
+         3、用于while语句的真值表达式
+    说明：当没有__bool__(obj)方法时，真值测试将取__len__(self)的返回值来测试布尔值
+
+    对象的属性管理函数
+    1、getattr(obj, name[,default]),从一个对象得到对象的属性：getattr(x, 'y') 等同于x.y；当属性不存在时，则产生一个AttributeError错误
+    2、hasattr(obj, name) 用给定的name返回对象obj是否有此属性，此做法可以避免getattr(obj, name) 时引发错误
+    3、setattr(obj, name, value) 给对象obj的名为name的属性设置相应的值value，setattr(x,'y',v) 等同于x.y = v
+    4、delattr(obj,name) 删除对象objname属性，delattr(x, 'y') 等同于del x.y
+
+    实例：
+        class Dog:
+            pass
+        dog1 = Dog()
+        dog1.kinds = "京巴"
+
+    练习：
+        写一个正方形类：
+        class Square:
+            def __init__(self, lside:"边长"):
+                self.lside = lside
+            def set_side_length(self, v):
+                "设置边长"
+
+            def get_side_length(self):
+                "获取边长"
+
+            def set_area(self):
+                "设置面积"
+
+            def get_area(self):
+                "返回面积"
+
+        s1 = Square(10):
+        print("s1的面积是：", s1.get_area()) # 100
+        print("s1的边长是：", s1.get_length()) # 10
+        s1.set_area(9)
+        print("s1的面积是：", s1.get_area()) #
+        print("s1的边长是：", s1.get_side_length())
+
+
+3、属性管理函数重写：
+    def __getattr__(self, n):  在对象字典内__dict__ 内没有属性时会被调用，通常用来虚拟特殊实例变量
+    def __setattr__(self, n, v) 在任何时候都会被调用，通常用来手动管理__dict__ 字典
+    def __delattr__(self, n)
+
+    作用：实现对特殊属性的管理， 虚拟特殊属性
+    注：以上方法当属性不存在时，需要AttributeError 异常错误
+        __getattr__ 是在找不到对应属性时才调用
+        __setattr__ 会在创建和修改实例变量时一定会被调用，
+        当有__setattr__ 实例方法时，需要手动管理__dict__ 字典
+
+    特性属性： @property
+    作用：用来模拟一个属性，通过@property 装饰器可以对模拟属性赋值和取值加以控制，
+         实现其他语言所拥有的getter(获取者)和setter(设置者)功能
+
+    练习：
+        import math
+
+        class Circle:
+            def __init__(self, r):
+                self.radius = r
+
+            @property
+            def area(self):
+                """实现getter方法"""
+                return self.radius ** 2 * math.pi
+
+            @area.setter
+            def area(self, value):
+                """实现setter方法"""
+                self.radius = math.sqrt(value / math.pi)
+
+            @property
+            def length(self):
+                """实现getter方法"""
+                return self.radius * 2 * math.pi
+
+        c1 = Circle(100)
+        print("c1的半径是：", c1.radius)
+        print("c1的面积是：", c1.area)
+
+        c1.area = 50
+        print("c1的半径是：", c1.radius)
+        print("c1的面积是：", c1.area)
+        print(c1.__dict__)
+
+        c1 = Circle(10)
+        print("c1的周长是：", c1.length)
+
+    练习：在Circle类添加获取周长属性length
+        c1 = Circle(10)
+        print("c1的周长是：", c1.length)
+
+
+4、迭代器（终级）
+    迭代器是指可以用next(it)函数取值的对象就是迭代器
+    可迭代对象是指能用iter(obj) 函数返回迭代器的对象（实例）
+    iter(obj) 对应的方法：def __iter__(obj):
+    next(it) 函数对应的方法：__next__(self):
+
+    说明：可迭代对象内一定有__iter__方法，此方法用来返回访问此对象的迭代器
+         迭代器内一定有__next__方法，此方法用来访问可迭代对象的值
+        class A:
+            def __iter__(self): # << 有此方法的为可迭代对象
+                return ......
+        a = A() # a 为可迭代对象
+
+        class B:
+            def __next__(self): # << 有此方法的为迭代器
+                return ......
+        b = B() # b 为迭代器对象
+    注：迭代器必须实现迭代器协议，迭代器协议是指对象能够用next函数获取下一项数据，
+       在没有下一项数据时，触发一个StopIteration异常来终止迭代器的约定
+
+    open(filename) 函数返回的对象时可迭代对象，可以用for语句获取到每一行数据
+
+    练习：写一个实现可迭代对象和迭代器协议的类，让此类可以生成从b还是的n格素数
+        class Primes:
+            def __init__(self, b, n):
+                .....
+            def __iter__(self):
+                ....
+            def __next__(self):
+                .....
+
+        for x in Primes(4, 6):
+            primes(x) # 5,7,11,13,19
+

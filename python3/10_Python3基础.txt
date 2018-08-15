@@ -1,0 +1,261 @@
+1、函数变量：
+    函数名即变量，此变量在创建时绑定一个函数
+
+    实例：
+        def fn():
+            print("hello world!")
+        print("hello everbody!")
+        f1 = fn   # 这里没有括号，相当于给fn绑定的这个函数起了一个别名
+        f1()    # 调用函数fn
+        fn()    # 调用函数fn
+
+
+2、函数要先创建再使用
+    例:
+        def f1():    # 相当与创建函数再绑定变量
+            pass
+        f1()   # 正确的调用
+        # ----------------------
+        f2()   # 错误的调用，因为此时f2变量还没有绑定函数
+        def f2():
+            pass
+
+
+3、函数的嵌套：
+    函数嵌套是指在一个函数里用def语句来创建其他函数的情况
+
+    实例：# 函数内部创建函数，并将其返回
+        def fn_outter():
+            print("fn_outter被调用")
+            def fn_inner():
+                print("fn_inner被调用")
+            fn_inner()   # 可以调用内部的fn_inner函数
+        fn_outter()
+        # fn_inner()   调用是错误的，因为没有fn_inner这个变量名
+
+        # 思考，能否在此处调用fn_inner?
+        def fn_outter():
+            print("fn_outter被调用")
+            def fn_inner():
+                print("fn_inner被调用")
+            return fn_inner
+        f = fn_outter()   # f绑定fn_inner这个函数
+        f()   # 调用
+
+
+4、全局变量和局部变量
+    局部变量：
+        定义在函数内部的变量称为局部变量（函数的形参也是局部变量）
+        局部变量只能在函数内部使用
+        局部变量在函数调用时被自动创建
+    全局变量：
+        定义在函数外部的变量称为全局变量
+        全局变量，所有函数否可以直接访问，但函数内不能将其直接改变
+    实例：
+        n = 100    # 全局变量
+        def f(a, b):
+            print(a, b)
+            n = 200    # 此函数内a, b, n 都为局部变量，只在函数调用是起作用（函数的形参也是局部变量）
+            print(n)
+            m = 300
+
+        f(100, 200)
+        print(a)    # 错的
+        print(m)    # 也是错的
+        print(n)    # 100
+
+    局部变量和全局变量创建和销毁实例：
+    def myadd(x, y):
+        m = x + y
+        return m
+    x = 100
+    y = 200
+    z = myadd(x, y)
+    a = 10
+    b = 20
+    z = myadd(a, b)
+
+
+5、python 的作用域：
+    作用域也叫名字空间，是访问变量时查找变量的范围空间
+
+    Python的四个作用域 LEGB
+        局部作用域  Local function
+        外部嵌套函数作用域  Enclosing function local
+        全局作用域（文件作用域）  Global（Module）
+        Python内置模块作用域     Builtin（Python）
+    变量名查找的规则是：
+        局部变量 --> 外部嵌套函数变量 --> 全局作用域 --> 内置模块作用域
+    实例：namespace.py
+        v = 100
+        def f1():
+            v = 200
+        print("f1内的V = ", v)
+        def f2():
+            v = 200
+            print("f2内的V = ", v)
+        f2()
+        print("全局的V = ", v)
+        f1()
+
+    global 语句
+    作用：
+        1、告诉解释器，global语句声明的一个后多个变量，这些变量的作用域为模块级的作用域，也称为全局作用域
+        2、全局声明global将赋值变量映射到模块文件内部的作用
+    语法：global 变量1, 变量2,......
+    实例:
+        global ga, gb
+        global gc
+    如:
+        v = 100
+        def f1():
+            global v   # 声明v为全局作用域的v
+            v = 200   # 想要此语句对全局变量v进行修改，
+        f1()   # 调用
+        # print(v)    # 100
+        print(v)    # 200
+    说明:
+        1、全局变量如果要在函数内部改变绑定关系，则必须经过全局声明，否则会被认为是局部变量
+        2、全局变量在函数内部不经过声明就可以访问,不可改变
+        3、不能先声明局部变量，再用global声明为全局变量（此做发不符合规则）
+        4、global变量的列表里的变量名不能出现在此作用域的形参列表里
+    实例:
+        s = "ABC"
+        string = "hello"
+        def f1(string):
+            # global s
+        # s += string
+        print(s)   # 访问不等于可以改变
+            # s = 200
+        # global s   # 警告不建议这么用
+        global string   # 错误
+        f1()
+        print(s)
+
+    nonlocal 语句
+    作用：告诉解释器，声明的变量不是局部变量，也不是全局变量，而是外部嵌套
+          函数内的变量
+    语法：nonlocal 变量1, 变量2,.....
+    实例：
+        v = 100
+        def f1():
+            v = 200
+            def f2()
+                # global v
+                # v = 300   # 此时修改全局的v
+                nonlocal v
+                v = 300   # 此时修改外部嵌套函数的作用域中的v
+            f2()
+            print("f1的v值：", v)
+        f1()
+        print("全局的v：", v)
+    说明：
+        1、nonlocal只能在被嵌套函数内部进行使用
+        2、当有两层或两层以上函数嵌套时，访问nonlocal变量只对最近一层的变量进行操作
+        3、nonlocal语句的变量列表中的变量名，不能出现在此函数的参数列表里
+
+    全局变量实在全局作用域内创建的变量
+    通常没有缩进的变量都是全局变量，有缩进的创建变量，要看变量的创建位置是
+    否在函数内，在函数内为局部变量
+
+    内建函数 ：
+        globals()   返回当前全局作用域内变量的字典
+        locals()    返回当前局部作用域内变量的字典
+    实例：
+        a = 1
+        b = 2
+        c = 3
+        def fn(c, d):
+            e = 300
+            print("locals返回：", locals())
+            print("globals返回：", globals())
+            print("全局的c：", globals()['c'])
+            print("局部的c：", locals()['c'])
+        fn(100, 200)
+
+
+6、eval和exec函数
+    eval() 函数：
+        作用：把一个字符串当成一个表达式来执行，返回表达式执行后的结果
+        格式：eval(source, globals = None, local = None)
+        实例：
+            x = 100
+            y = 200
+            s = "x+y"   # s为字符串
+            s = input("请输入x和y的表达式：")
+            v = eval(s)   # 把s绑定的字符串当成程序语句来执行
+            print(v)   # 300
+
+            gs = {"x":10, "y":20}
+            v = eval("x+y", gs)
+            print(v)   # 30
+
+            ls = {"x":1, "y":2}
+            v = eval("x+y", gs, ls)
+            print(v)   # 3
+
+            ls = {"x":1000}
+            v = eval("x+y", gs, ls)
+            print(v)   # 1020
+
+    exec() 函数
+        作用：把一个字符串当成程序来执行
+        格式：exec(source, globals = None, local = None)
+        实例：
+            x = 100
+            y = 200
+            s = "print("hello", x, y); z = x + y"
+            exec(s)   # hello 100 200
+            # 以上两句等同于此句的作用
+            # print("hello"); z = x + y
+            print(z)
+
+    注：globals参数和locals参数的作用域eval参数作用相同，用来设置执行的作用域
+
+
+7、问题：创建函数的语句是什么？
+    def 语句
+    lambda 表达式
+    作用：创建一个匿名函数对象，同def类似，但不提供函数名
+    语法：lambda [形参名1, 形参2, ...]: 只有一条表达式（语句也不能用）
+    实例：
+        # def myadd(x, y)
+            # return x + y
+        myadd = lambda x, y : x + y
+        print("20+30 = ", myadd(20, l30))
+        print("3.1+4.2 = ", myadd(3.1, 4.2))
+    说明： 1、lambda只是一个表达式，它用来创建一个函数对象，当lambda表达式执行时，返回的是冒号后表达式的值
+          2、lambda表达式创建的函数只能包含一条表达式
+          3、lambda比函数简单且可以随时创建和销毁，有利于减少程序的耦合度
+
+
+练习：写一个lambda表达式，传入两个数x, y， 返回x的平方对y求余的值
+    mymod = lambda.....
+    print(mymod(4,5))   # 1   # 4**2%5
+    # 跟函数调用是一样的
+
+    答案：
+        x = int(input("请输入x:"))
+        y = int(input("请输入y:"))
+        z = lambda x, y: x**2 % y
+        print(z(x, y))
+
+练习：
+    1、看懂下面和程序在做什么：
+        def fn(f,x,y):
+            print(f(x,y))
+        fn((lambda a, b : a+b), 100, 200)
+        fn((lambda c, d : c**d), 3, 4)
+
+    2、给出一个数n，写一个函数myfac，返回n的阶乘n!（n! = 1*2*3*4......*n）
+        print(myfac(5))   #120
+
+        答案：
+            def myfac(a):
+                n = 1
+                for x in range(1, a + 1):
+                    n *= x
+                return n
+
+            print(myfac(5))
+
