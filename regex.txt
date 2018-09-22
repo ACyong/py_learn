@@ -1,0 +1,334 @@
+1、定义：使用字符和特殊符号组成的能够描述某一类字符串的表达式，是一个匹配的模式，本身是一个字符串
+
+
+2、动机：
+    1）文本处理成为计算机的常见工作
+    2）文本处理中，根据内容筛选查找匹配指定的内容又是缠裹难过的功能之一
+    3）方便快速的解决上述问题，正则表达式应运而生
+
+
+3、特点和具体使用
+    1）是一种高级的文本搜索匹配模式，提供了丰富的功能
+    2）正则表达式支持多种语言使用方便
+    3）在应用上 mongodb 可以存储正则表达式
+    4）在爬虫中大量使用正则表达式进行html文本的匹配
+    5）Django，tornado 等框架中，路由的匹配
+
+
+4、正则表达式规则及元字符
+    正则是由原子和元字符组成
+
+    re 模块是python的标准款模块，是用来处理正则表达式的模块
+    import re  # 导入re模块
+    re.findall(regex, string)
+    功能：使用regex 取匹配string 中的内容，如果匹配到则以一个列表的方式进行返回
+
+    原子是正则表达式的最基本的组成单元，而且每个模式中最少要包含一个原子，由打印或非打印字符组成，如下5中分类：
+      1）普通字符作为原子：如a-z、A-Z、0-0
+         匹配规则：匹配原子字符串
+         实例：In [2]: re.findall('abc', 'abcdefabcdefgh')
+              Out[2]: ['abc', 'abc']
+      2）一些特殊字符和转义后元字符作为原子，当正则表达式中要匹配 \ | . ^ $ * + ? {} [] () " ' 这些字符时需要使用 \ 进行转义
+      3）非打印字符作为原子需要转义
+         \a   响铃                 \n   代表换行符
+         \b   倒退                 \r   返回光标至行首
+         \c   不再产生新的输出       \t   水平制表符
+         \e   转义符                \v   垂直制表符
+         \f   换页                 \0   空字符，字符值为零
+      4）使用\ 作为原子需要转义
+      5）自定义原子表，如：[asd......]
+         如：[adfbd] [a-z] [A-Z] [0-9] [a-zA-Z0-9]
+         匹配规则：匹配集合中任意一个字符
+         实例：In [29]: re.findall('[0-9][abcd][A-Z]', "12bDdg3cK")
+              Out[29]: ['2bD', '3cK']
+              In [31]: re.findall('^[0-9a-zA-Z]{6,8}$', "asb123kw")
+              Out[31]: ['asb123kw']
+
+      \ 转义:
+        1、\ 可以将那些有意义的字符转成没有意义的原子字符
+        2、所有没有意义的字符，加上转义也没有意义，如：\@，加与不加都一样
+        r + 字符串 --> raw 原始字符串格式，特点：将字符串内所有的内容原样使用，r'\bto\b' --> '\\bto\\b'
+        当正则表达式中要匹配那些需要使用 \ 进行转义的字符时，最好使用raw 字符串，可以避免字符串解析为正则表达式带来的麻烦
+        实例：In [65]: re.findall('\\\"hello\\\"', 'he said "hello"')
+             Out[65]: ['"hello"']
+             In [66]: re.findall(r'\"hello\"', 'he said "hello"')
+             Out[66]: ['"hello"']
+
+    元字符：正则表达式中定义的，具有特定意义的符号，通常在正则表达式中不单独使用，用来修饰原子
+      1）| 或 连接多个正则表达式：
+         元字符：|
+         匹配规则：abc|def    表示既能匹配abc 也能匹配def
+         实例：In [6]: re.findall('abc|def|gh', 'abcdefabcdefgh')
+              Out[6]: ['abc', 'def', 'abc', 'def', 'gh']
+         注：竖线左右不要加空格，除非是要匹配空格
+            不能查找重叠
+
+      2）匹配任意一个字符：
+         元字符：.
+         匹配规则：使用‘.’ 代表任意一个字符，不能代表‘\n’等特殊字符
+         实例：In [9]: re.findall('f.o', "I'm from china")
+              Out[9]: ['fro']
+
+      3）匹配字符串开头：
+         元字符：^  或  \A
+         匹配规则：匹配字符串的开头位置内容， ^abc --> 以abc 开头的字符串，必须写在正则表达式的最前面
+         实例：In [11]: re.findall('^from', "I'm from china")
+              Out[11]: []
+
+      4）匹配字符串的结尾：
+         元字符：$  或  \Z
+         匹配规则：当一个正则表达式是一个字符串结尾时能匹配出来， \.py --> 匹配python 文档
+         实例：In [14]: re.findall('py$', "python test.py find.py")
+              Out[14]: ['py']
+
+      5）匹配0 次或多次正则表达式
+         元字符：*
+         匹配规则：用* 匹配它前面出现的正则表达式0 次或多次， ab* --> a    ab    abb    abbbbbbb
+         实例：In [21]: re.findall('py*', "python pyyyyyyyy p")
+              Out[21]: ['py', 'pyyyyyyyy', 'p']
+
+      6）匹配前面的正则表达式1 次或多次
+         元字符：+
+         匹配规则：匹配前面出现的正则表达式至少出现一次
+         实例：In [23]: re.findall('py+', "python pyyyyyyyy p")
+              Out[23]: ['py', 'pyyyyyyyy']
+
+      7）匹配前面出现的正则表达式0 次或1 次
+         元字符：?
+         匹配规则：匹配前面出现的正则表达式0 次或 1次
+         实例：In [25]: re.findall('p.?', "python pyyyyyyyy p")
+              Out[25]: ['py', 'py', 'p']
+
+      8）匹配前面的正则表达式，指定次数
+         元字符：{N}    N表示一个正整数
+         匹配规则：匹配前面的正则表达式出现N 次
+         实例：In [26]: re.findall('p.{3}', "python pyyyyyyyy p")
+              Out[26]: ['pyth', 'pyyy']
+
+      9）匹配前面出现的正则表达式指定次数区间
+         元字符：{m, n}
+         匹配规则：匹配前面的正则表达式m - n 次
+         实例：In [28]: re.findall('p.{3, 6}', "python pyyyyyyyy p")
+              Out[28]: ['python ', 'pyyyyyy']
+
+      10）字符集合取非
+         元字符：[^...]
+         匹配规则：匹配任意一个非集合中的字符  [^_a-zA-Z0-9] --> 匹配任意特殊符号，如：$
+         实例：In [32]: re.findall('[^aeiou]', "hello world")
+              Out[32]: ['h', 'l', 'l', ' ', 'w', 'r', 'l', 'd']
+
+      11）任意数字/ 非数字字符
+         元字符：\d
+                \D
+         匹配规则：\d 匹配任意一个数字字符      \d{3} --> 123 456 546
+                  \D 匹配任意一个非数字字符    \D --> a $ d * 等非数字
+         实例：In [35]: re.findall('\d{3}', "hello world 12306")
+              Out[35]: ['123']
+              In [36]: re.findall('\d{3}', "hello world 123060")
+              Out[36]: ['123', '060']
+              In [37]: re.findall('\D{3}', "hello world 123060")
+              Out[37]: ['hel', 'lo ', 'wor', 'ld ']
+
+      12）匹配任意（非）数字字母下划线
+         元字符：\w
+                \W
+         匹配规则：\w 匹配任意一个数字、字符、下划线  [_a-zA-Z0-9]
+                  \W 与\w 相反  [^_a-zA-Z0-9]
+         实例：In [40]: re.findall('[A-Z]\w*', "Hello World")
+              Out[40]: ['Hello', 'World']
+              In [41]: re.findall('\w*-\d+', "xiaoming-64")
+              Out[41]: ['xiaoming-64']
+              In [44]: re.findall('\W', "xiaoming-64")
+              Out[44]: ['-']
+
+      13）匹配空白/ 非空白字符
+         元字符：\s
+                \S
+         匹配规则：空白字符 ''  \n  \r  \0  \t
+                  \s  可以匹配其中任意一个
+                  \S  匹配任意一个非空白字符
+         实例：In [45]: re.findall('hello\s[a-zA-Z]*', "hello China")
+              Out[45]: ['hello China']
+              In [47]: re.findall('\S*', "hello China")
+              Out[47]: ['hello', '', 'China', '']
+
+      14）匹配字符串的开头和结尾
+         元字符：\A
+                \Z
+         匹配规则：\A  匹配字符串开头  ^
+                  \Z  匹配字符串结尾  $
+         实例：In [48]: re.findall('\Ahello', "hello China")
+              Out[48]: ['hello']
+              In [50]: re.findall('China\Z', "hello China")
+              Out[50]: ['China']
+
+      15）匹配（非）单词边界
+         元字符：\b
+                \B
+         单词边界：将连续字母认为是一个单词而字母与非字母的交接认为是单词边界
+         实例：In [51]: re.findall(r'\bBeijing\b', "Welcome to Beijing")
+              Out[51]: ['Beijing']
+              In [52]: re.findall(r'\bjing\b', "Welcome to Beijing")
+              Out[52]: []
+              In [54]: re.findall(r'\bto\b', "Welcome to tornado")
+              Out[54]: ['to']
+              In [58]: re.findall(r'\Bto', "Welcome to tornado")
+              Out[58]: []
+              In [59]: re.findall(r'to\B', "Welcome to tornado")
+              Out[59]: ['to']
+          注：数字、下划线被认为可以是单词中的部分
+
+    总结：
+      匹配实际字符：字符
+      匹配单个字符：.  []  \w  \W  \d  \D  \s  \S
+      匹配正则表达式重复次数：*  +  ？  {}
+      匹配开头结尾或边界：^  $  \A  \Z  \b  \B
+      其他： |  [^...]
+
+
+5、贪婪 & 非贪婪
+    贪婪模式：在默认情况下，正则表达式是贪婪模式，即使用* + ？ {m, n} 的时候，都尽可能的向后匹配内容
+    非贪婪模式：尽量少的匹配内容
+
+    贪婪转变为非贪婪 ，后加？，如：* --> *?
+                               + --> +?
+                               ? --> ??
+                               {m, n} --> {m, n}?
+    实例：In [71]: re.findall('ab*?', 'abbbbbbbbbbbbcde')
+         Out[71]: ['a']
+         In [72]: re.findall('ab+?', 'abbbbbbbbbbbbcde')
+         Out[72]: ['ab']
+         In [73]: re.findall('ab??', 'abbbbbbbbbbbbcde')
+         Out[73]: ['a']
+         In [74]: re.findall('ab{2,5}?', 'abbbbbbbbbbbbcde')
+         Out[74]: ['abb']
+
+
+正则表达式的分组
+    正则表达式可以分组，分组的标志即为()，每个括号中的内容是整体正则表达式的一个子组，表达了一个小的整体
+    子组可以影响 * + ？{} 的重复行为，当重复是把子组当作整体进行对待
+    当有多个子组的时候，从外到内，从左到右，成为第一子组，第二子组，第三子组
+
+    可以给组起一个名字，称之为捕获组（命名组）
+    格式：(?P<name>regex)  其中name 就是起的名字
+    实例：'hello (?P<cat>kitty)'  给kitty正则表达式的子组起了个名字cat
+          In [79]: re.search('hello (?P<cat>kitty)', 'hello kitty').group()
+          Out[79]: 'hello kitty'
+
+    调用命名组：
+    格式：(?P=name)  name 是要调用的子组的名称
+    实例： In [83]: re.search('hello (?P<cat>kitty) (?P=cat)', 'hello kitty kitty').group()
+          ...:
+          Out[83]: 'hello kitty kitty'
+
+
+练习：1、匹配长度为8-10 位的密码必须以字母开头，密码可以是数字字母下划线组成
+        ^[a-zA-Z]\w{7, 9}$
+     2、匹配身份证
+        \d{17}(\d|x)
+     3、匹配浮点数
+        ^-?\d+\.\d+$
+     4、整数或浮点数
+        ^-?\d+(\.\d+)?$
+
+
+re 模块
+    compile(regex)
+    功能：生成一个正则表达式对象
+    参数：传入一个正则表达式
+    返回值：返回正则表达式相应的对象
+    注： 正则表达式对象的一些属性函数同re 模块可调用的一些函数名功能相同，用法相近，这些函数多为常用的匹配显示函数
+        功能相同，使用的区别上只是用re 直接调用的时候，第一个参数需要传入正则表达式
+        推荐用正则表达式对象来调用方法，效率会提高
+    实例：In [85]: re.findall('\d{3}', '123')
+         Out[85]: ['123']
+         In [87]: obj = re.compile('\d{3}')
+         In [88]: obj.findall('123')
+         Out[88]: ['123']
+
+    使用obj 调用
+        findall(string)
+            功能：获取字符串中能被正则表达式匹配的内容
+            参数：目标字符串
+            返回值：将匹配到的内容以列表形式返回，当正则表达式有分组的时候，则每一项会显示每个分组匹配到的内容
+
+        split(string)
+            功能：将一个字符串，按照正则表达式进行分割
+            参数：要分割的字符串
+            返回值：分割后的内容放入一个列表
+
+        sub(repl, string, count)
+            功能：使用repl的内容，替换string 字符串中能被正则表达式匹配的部分
+            参数：repl：替换内容
+                 string：要匹配的字符串
+                 count：默认情况下替换所有匹配到的部分如果赋值，表示最多替换count 处
+            返回值：返回替换后的字符串
+
+        subn()
+            同sub ，只是返回值为元组，元组中除了替换后的字符串，还多了一个实际替换的个数
+
+        match(string)
+            功能：匹配一个字符串，得到匹配结果
+            注：只用当正则表达式匹配的内容为字符串的开头的时候才能匹配到，并且当多处的时候只能匹配一处
+            参数：要匹配的字符串
+            返回值：匹配到返回一个match object，，如果没有匹配到返回None
+            match_object 的属性和函数
+              属性
+               'pos',
+               're',
+               'endpos',
+               'lastgroup',
+               'lastindex',
+              函数
+               'span',
+               'start',
+               'end',
+
+        search()
+            同match ，区别是可以匹配任意位置，且也是只匹配一处
+
+        finditer()
+            同findall()
+            区别：返回一个迭代对象，每个对象都是一个match object
+
+    显示匹配结果
+        group([n])
+        功能：显示匹配到的字符串
+        参数：如果不加默认为0 表示返回整体的匹配结果
+             如果加一个数字，表示返回对应的组的匹配结果，如果越界，则报错
+        返回值：返回相应的匹配结果
+
+        groups()
+            功能：得到所有组匹配到的内容，以一个元组返回
+
+        groupdict()
+            功能：获取所有捕获组匹配内容，以字典返回。键为组名，值为匹配到的内容
+
+    flags
+        compile  findall  match  search  finditer  sub  subn  split  中的形参
+        使用re 调用时均有这个形参，使用compile 对象调用时在compile 函数中传入此形参即可
+        作用：更加灵活的控制匹配内容
+          值：              作用：
+          I，IGNORECASE     忽略大小写
+          S，DOTALL         对元字符. 起作用，能匹配\n
+          M，MULTILINE      对与字符^ $ 起作用，匹配开头结尾时计算换行
+          X，VERBOSE        可以给正则表达式添加注释，但是实际使用会显得混乱
+
+
+JS 中的模式匹配
+    修饰符：
+        i：忽略大小写
+        g：全局匹配
+        m：多行匹配
+
+    函数：
+        1、replace(substr/regexp,replacement)  作用：使用replacement 替换substr/regexp
+        2、match(substr/regexp)  作用：返回满足substr 或regexp 格式的子字符串，将这些字符串们放在数组中进行返回
+        3、search(substr/regexp)  作用：返回满足substr/regexp 格式的子字符串第一次出现的下标，如果未找到，则返回-1
+
+
+作业：并发服务器
+     socket 套接字
+     mysql 数据库
+     文件的读写操作
+
