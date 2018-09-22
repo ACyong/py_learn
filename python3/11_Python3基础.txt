@@ -9,7 +9,7 @@
     def make_power(y):
         print("y的值是：", y)
         def f(x):
-            return x ** y # <<<---注意此处的y为外部嵌套函数内的y
+            return x ** y  # <<<---注意此处的y为外部嵌套函数内的y
         return f
     pow2 = make_power(2)
     print(pow2(5))
@@ -52,7 +52,7 @@
                     print("hello world!")
 
                 def f2(f):
-                    f()   # f绑定了fn，调用f 相当于调用了fn
+                    f()  # f绑定了fn，调用f 相当于调用了fn
                     print("hello everbody!")
 
                 f2(fn)  # 调用f2函数，传入fn函数
@@ -82,10 +82,16 @@
                 print(f(L))
 
     Python 内建的高阶函数：reduce, map, filter, sorted
-        reduce 函数
+        reduce 函数: 在 Python3 中，reduce() 函数已经被从全局名字空间里移除了，它现在被放置在 fucntools 模块里，
+                    如果想要使用它，则需要通过引入 functools 模块来调用 reduce() 函数：
             reduce(func(x,y), lst)，其中func必须有两个参数。每次func计算的结果继续和序列的下一个元素做累积计算。
         实例：
+            from functools import reduce
 
+            def add(x,y):
+                return x + y
+
+            print (reduce(add, range(1, 101)))  # 5050
 
         map 函数：
            map(func, *iterable), 用函数对可迭代对象中的每一个元素作为参数
@@ -278,6 +284,12 @@ if type() == list
 
         print(fact(5))
 
-    2、写程序，算出1-20的阶乘的和
-       1！+ 2！+ 3！+4！+ 5！+…………+20！
+    2、写程序，算出1-20的阶乘的和: 1！+ 2！+ 3！+4！+ 5！+…………+20！
+    答案:
+        def fun(x):
+            if x == 1:
+                return 1
+            return x * fun(x-1)
+
+        print(sum(map(fun, range(1, 21))))
 
