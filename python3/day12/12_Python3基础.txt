@@ -105,7 +105,7 @@
         def abc():
             pass
         fn = abc
-        print("fn绑定的函数名是：", fn.__name__) # abc
+        print("fn绑定的函数名是：", fn.__name__)  # abc
 
     __doc__属性：
     作用：用于记录文档字符串
