@@ -52,12 +52,12 @@
          finally 子句最多只能有一个，也可以省略不写
 
     try-except 捕获异常的流程
-       1、except 子句用来捕获和处理当模中类型错误发生时，处理异常
-       2、except 子句会根据错误类型进行匹配，如果匹配成功，则程序转入正常状态，并调用处理语句进行处理
-       3、如果没有匹配到任何错误类型，则程序的异常状态会继续向上（调用处）传递，至入传入解释执行器后终止程序执行
-       4、如果没有异常，则执行else子句中的语句
-       5、最后执行finally子句中的语句（一定会被执行）
-       6、如果没有相应的错误类型与之匹配，则执行空类型的except子句（except：），之后程序进入正常状态
+        1、except 子句用来捕获和处理当模中类型错误发生时，处理异常
+        2、except 子句会根据错误类型进行匹配，如果匹配成功，则程序转入正常状态，并调用处理语句进行处理
+        3、如果没有匹配到任何错误类型，则程序的异常状态会继续向上（调用处）传递，至入传入解释执行器后终止程序执行
+        4、如果没有异常，则执行else子句中的语句
+        5、最后执行finally子句中的语句（一定会被执行）
+        6、如果没有相应的错误类型与之匹配，则执行空类型的except子句（except：），之后程序进入正常状态
 
     try-finally 语句语法：
         try:
@@ -69,12 +69,17 @@
              finally子句都会被执行
              注：try-finally语句不会改变程序的状态（正常/异常）状态
 
-        练习：写一个函数getscore() 获取学生输入的成绩（0～100），如果输入出现异常，则用
-             try-except语句来处理异常并此函数返回0，如果一切正常则返回输入的成绩
-             def get_score():
-                 ....
-             score = get_score()
-             print("学生的成绩是：", score)
+        案例:
+            def fry_egg():
+                print("打开天然气！")
+                print("开始煎鸡蛋！")
+                try:
+                    n = int(input("请输入蛋的个数")) # 肯触发异常
+                    print("完成煎蛋！， 共煎了%d个鸡蛋" % n)
+                finally:
+                    print("关闭天然气！")
+
+            fry_egg()
 
 
 4、raise 语句
@@ -144,7 +149,7 @@
     l/list 列表源码
     h/help 查看帮助
     n/next 执行下一行语句
-    c/cont/continue 继续执行，知道下一个断点
+    c/cont/continue 继续执行，直到下一个断点
     b/break [断点位置] 设置断点
     cl/clear 清除断点
     s/step 进入到函数内部执行
@@ -165,17 +170,37 @@
 练习：一个球从100米高空降下，每次落地后反弹高度为原高度的一半，再落下
      （1）写程序算出皮球第十次落地后反弹的高度
      （2）打印出球共经历多少米路程
+    
+    答案:
+        def height(h, s):
+            l = 0
+            for x in range(1,s+1):
+                l += (h * 1.5)
+                h /= 2
+            return h,l
+        print(height(100, 10))
 
-练习：
-    1、Python3 调试器需要导入什么模块，模块中的方法是什么？
-       在控制台下运行调试器的命令格式
-    2、写一个程序student_info.py要求运行时实现如下功能：
-       $ python3 student_info.py
-       输入姓名：
-       输入年龄：（将年龄转化为int类型）
-       输入成绩：（将成绩转化为int类型）
-       要求：如果学生年龄和成绩输入有错误，则打印：“输入有误，请重新输入学生信息！”
-            然后让用户重新输入姓名、年龄、及成绩
-    3、在第二题中的student_info.py中添加语句，实现用户在输入 ctrl + c 终止程序
-       时直接终止程序但不会报错
+练习：写一个函数getscore() 获取学生输入的成绩（0～100），如果输入出现异常，则用
+     try-except语句来处理异常并此函数返回0，如果一切正常则返回输入的成绩
+        def get_score():
+            ....
+        score = get_score()
+        print("学生的成绩是：", score)
+    答案:
+        def get_score():
+            score = int(input("输入学生成绩:"))
+            if score < 0:
+                raise ValueError("成绩小于零")
+            if score > 100:
+                raise ValueError("成绩大于零")
+            return score
+
+        while True:
+            try:
+                score = get_score()
+                break
+            except ValueError as err:
+                print("有错误发生：", err)
+
+        print("学生的成绩是：", score)
 
