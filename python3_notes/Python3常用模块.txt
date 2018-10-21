@@ -1,181 +1,4 @@
-1、装饰器 decorator（专业提高篇）
-    什么是装饰器：1、装饰器是一个函数，主要是用来包装另一个函数或类
-                2、装饰的目的是在不改变原函数或类的源代码和调用方式的情况下，改变被包装对象的行为
-                3、函数装饰器是指一个装饰器函数传入的是一个函数，返回也是一个函数
-
-    实现装饰器知识储备：
-        1、函数即“变量”
-        2、高阶函数
-        3、嵌套函数
-        高阶函数 + 嵌套函数 --> 可以实现装饰器
-
-    语法：
-        def 装饰器函数名(参数)：
-            语句块
-            return 函数对象
-
-        # 被装饰函数的使用语法
-        @ 装饰器函数名<换行>
-        def 函数名(参数列表)
-            语句块
-
-    实例：用装饰器函数名替换被装饰函数
-        def mydeco(fn):  # 此函数为装饰器函数，可以用来装饰带有一个参数的函数
-            def say_hello2(name):
-                print("hello:", name)
-            return say_hello2
-
-        @ mydeco
-        def say_hello(name):
-            print("你好！", name)
-
-        # def say_hello2(name):
-        #     print("hello！", name)
-
-        # say_hello = say_hello2  此处可以用装饰器实现同样的功能
-        # say_hello = mydeco(say_hello)  此处可以用装饰器语句 @
-
-        say_hello("小张")
-
-    实例：实现用闭包来包裹原被装饰函数，可以在执行前和执行后加入自定义代码
-        def mydeco(fn):
-            def f2(name):  # 此时f2为闭包，因为f2调用了fn 参数
-                print("调用函数前。。。。")
-                fn(name)
-                print("调用函数后。。。。")
-            return f2
-
-        @ mydeco
-        def say_hello(name):
-            print("你好！", name)
-
-        say_hello("小张")
-
-    实例：在函数调用时，打印函数最终执行的时间（用装饰器测试函数执行时间案例）
-        """用装饰器测试一个函数的执行时间"""
-        import time
-
-        def f2(f1):
-            def warpper(*args, **kwarge):  # 通用的装饰器的形参列表为(*args, **kwarge) 可以装饰任意参数的函数
-                start_time = time.time()
-                f1()
-                stop_time = time.time()
-                print("the f1 run time is %s" % (stop_time - start_time))
-            return warpper
-
-        @f2
-        def f1():
-            time.sleep(3)
-            print("f1 .......")
-
-        f1()
-
-
-2、函数的完整格式
-    文档字符串：
-        语法：def 函数名(形参列表)
-                 函数文档字符串
-                 语句块
-        说明：1、函数的定义语句（def 语句）的第一次出现的没有赋值给任何变量的字符串为文档字符串
-             2、文档字符串通常用来说明本函数的功能和使用方法
-             3、在交互模式下，输入>>>help(函数名) 可以查看文档字符串
-        实例：
-            def myfun():
-                """我是文档字符串"""
-
-    函数的参数注释：
-        实例：只能用在python3.5 之后的版本
-        def fn(a:"第一个参数", b:"第二个参数", c:int) -> str:
-            return str(a + b + c)
-
-    函数定义的完整语法
-        详见：>>> help("def")
-        [装饰器]
-        def 函数名([位置形参], [*元组形参], [命名关键字形参], [**字典形参]) [-> 注释表达式]:
-            """文档字符串"""
-            语句块
-
-
-3、函数属性 attribute
-    __name__属性
-    作用：用来记录函数名
-    说明：1、通常属性是指对象（实例）的变量
-         2、以双下划线开头，以双下划线结尾的标识符代表Python的特殊变量
-    实例：
-        def abc():
-            pass
-        fn = abc
-        print("fn绑定的函数名是：", fn.__name__)  # abc
-
-    __doc__属性：
-    作用：用于记录文档字符串
-    实例：
-        def cba():
-            "这是一块文档字符串"
-            pass
-
-
-4、模块：Module
-    模块是由一个包含有一系列变量，函数，类等组成的程序组
-    模块是一个文件，模块文件名通常以.py结尾
-    作用：让一些相关的变量，函数，类等有逻辑的组织在一起，使逻辑结构更加清晰
-         模块中的变量，函数和类等可提供给其他模块或程序使用
-
-    模块的分类：
-        1、内置模块（builtins），在解析器的内部，可以直接使用
-        2、标准模块，python安装时且可直接使用的
-        3、第三方模块（通常为开源），需要自己安装
-        4、用户编写的模块（可以作为其他人的第三方模块）
-
-    模块的导入 import
-        import 语句：
-            import 模块名1[as 模块新名1][,模块名2[as 模块新名2]].........(推荐)
-        实例：
-            import math # 导入数学模块
-            import sys, random
-            作用：将模块整体导入到当前模块中
-            用法：模块名.属性名
-
-        dir(obj) 函数，返回所有属性的字符串列表
-                 dir([对象]) -> 返回一个字符串列表
-                 作用：如果没有给定参数调用，则返回当前作用域内所用变量的列表
-                      如果给定一个模块作为参数，则返回这个模块所有属性的字符串列表
-                      如果给定一个类，则返回类的所有类变量
-        help(obj) 函数，可以查看模块相关的字符串
-
-        练习：用math模块，输入一个圆的面积，求圆的半径和周长
-             Math.sqrt(x) # 求平方根
-             math.pi # 圆周率
-
-        from import 语句
-            语法：from 模块名 import 模块属性名1 [as 属性新名1], 模块属性名2 [as 属性新名2].....
-            作用：将某模块内的一个或多个属性导入到当前模块的作用域
-            实例：
-                form math import factorial as fac
-                from math import sin
-                from math import pi
-                sin(pi / 2)
-
-        from import * 语句
-            语法：from import *
-            作用：将某个模块的所有属性导入到当前模块
-            实例：
-                from math import *
-                print(sin(pi/2)
-                factorial(10)
-
-    导入语句总结：
-        import math
-        from math import pi
-        from math import *
-
-    内置模块
-       builtin ，.....
-    标准库模块：
-       random， math， os， functools，.....
-
-
-5、时间模块：
+1、时间模块：
     time：此模块提供了时间相关的函数，且一直可用
     时间简介：
         公元纪年：是从0000年1月1日 0时开始
@@ -236,14 +59,25 @@
             %Z 当前时区的名称
             %% %号本身
 
-    练习：输入生日，算出你已经出生多少天
+    练习
+    1.输入生日，算出你已经出生多少天
         import time
         x = time.time()
         g = time.mktime((1995,1,1,0,0,0,0,0,0))
         print((x - g) // (3600 * 24) + 1)
 
+    1.有一个程序，打印出一个电子时钟，格式为：HH:MM:SS
+        import time
+        def clock():
+            while True:
+                t = time.localtime()
+                h, m, s = t[3:6]
+                print("%02d : %02d : %02d" % (h, m, s), end = "\r")
+                time.sleep(1)
+        clock()
 
-6、系统模块 sys
+
+2、系统模块 sys
     用于获取和设置与系统相关的信息
 
     变量：
@@ -270,7 +104,7 @@
             print("helloB")
 
 
-7、os 操作系统模块
+3、os 操作系统模块
     os.getcwd() 获取当前工作目录，即当前python脚本工作的目录路径
     os.chdir("dirname")  改变当前脚本工作目录；相当于shell下cd
     os.curdir  返回当前目录: ('.')
@@ -302,7 +136,7 @@
     os.path.getmtime(path)  返回path所指向的文件或者目录的最后修改时间
 
 
-6、数学模块 math
+4、数学模块 math
     模块名 math
     变量： math.e   自然对数的底e
           math.pi   圆周率pi
@@ -322,9 +156,16 @@
         math.sin(x) 返回x的正弦（x为弧度）
 
     练习：给出圆周的半径，输入圆的角度，算出扇形的面积
+        import math as m
+
+        s = int(input("输入圆的面积："))
+        r = m.sqrt(s/m.pi)
+        z = m.sqrt(s/m.pi) * m.pi * 2
+
+        print(r, z)
 
 
-9、随机模块 random
+5、随机模块 random
     作用：用于模拟生成随机数据的模块
     假设：import random as R
     函数：R.random()  返回一个[0, 1）之间的随机浮点数（不包含1）
@@ -352,7 +193,7 @@
         print(checkcode)
 
 
-10、json 模块
+6、json 模块
     JSON(JavaScript Object Notation) 是一种轻量级的数据交换格式，易于人阅读和编写。
 
     实例：序列化：
@@ -380,47 +221,7 @@
     pickle 模块与json 模块用法一样，只是可序列化python 的数据更加丰富，但不常用
 
 
-12、string 模块
+7、string 模块
 
 
-13、collections 模块
-
-
-11、快速安装模块
-    模块导出：pip freeze >requirements.txt
-    模块导入：pip install -r requirements.txt
-
-
-练习：
-    1、有一个程序，打印出一个电子时钟，格式为：
-       HH:MM:SS
-    2、编写一个闹钟程序，启动时设置时间，到时后打印一句话程序退出
-    3、编写杨辉三角
-
-面试题：
-    L = [1, 2, 3]
-    def f(n = 0, lst = []):
-        lst.append(n)
-        print(lst)
-    f(4, L) # [1, 2, 3, 4]
-    f(5, L) #[1, 2, 3, 4, 5]
-    f(100) # [100]
-    f(200) # [100, 200]   出现bug
-
-    解决bug的方法：
-        L = [1, 2, 3]
-        def f(n = 0, lst = None):
-            if lst is None:
-                lst = [] # 创建一个新列表
-            lst.append(n)
-            print(lst)
-        f(4, L)
-        f(5, L)
-        f(100)
-        f(200)
-        --------正确显示如下-------
-        [1, 2, 3, 4]
-        [1, 2, 3, 4, 5]
-        [100]
-        [200]
-
+8、collections 模块
