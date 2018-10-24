@@ -10,59 +10,59 @@
 
 
 2、单继承：
-class 类名(超类名)：  # <<<--- 继承列表内可以添加超类
-    .......
+    class 类名(超类名)：  # <<<--- 继承列表内可以添加超类
+        .......
 
-思考：list类里只有append向末尾添加一个元素的方法，但没有向列表头添加元素的方法，试想能否为类表在不改变原有功能的基础上，添加一个insert_head(n)方法，在列表的头部（前部）添加元素
-class MyList(list):
-    def insert_head(self, n):
-        ......
+    思考：list类里只有append向末尾添加一个元素的方法，但没有向列表头添加元素的方法，
+    试想能否为类表在不改变原有功能的基础上，添加一个insert_head(n)方法，在列表的头部（前部）添加元素
+    class MyList(list):
+        def insert_head(self, n):
+            ......
 
-思考：能否让教师类也有学的功能
+    继承说明：任何类都直接或间接的继承自object类，object类是一切python3新式类的超类
 
-继承说明：任何类都直接或间接的继承自object类，object类是一切python3新式类的超类
+    类中的base属性：
+    __base__ 用来记录此类的基类
 
-类中的base属性：
-__base__ 用来记录此类的基类
+    覆盖 override
+    覆盖是指在有继承关系的类中，子类中实现了与基类（超类）同名的方法，在子类实例调用该方法时，
+    实际调用的是子类中的覆盖版本，这种现象叫覆盖
 
-覆盖 override
-覆盖是指在有继承关系的类中，子类中实现了与基类（超类）同名的方法，在子类实例调用该方法时，实际调用的是子类中的覆盖版本，这种现象叫覆盖
+    super函数：
+    super(type, obj): # 返回绑定超类的实例（要求obj必须为type类型的实例）
+    super() 返回绑定超类的实例，等同于super(__class__, 实例方法的第一个参数)
+    作用：用super可以调用父类的方法（可以是被覆盖版本的方法）
 
-super函数：
-super(type, obj): # 返回绑定超类的实例（要求obj必须为type类型的实例）
-super() 返回绑定超类的实例，等同于super(__class__, 实例方法的第一个参数)
-作用：用super可以调用父类的方法（可以是被覆盖版本的方法）
+    显示调用基类的构造方法：
+    当子类中实现在__init__方法时，基类的构造方法并不会调用（因为被覆盖了）
 
-显示调用基类的构造方法：
-当子类中实现在__init__方法时，基类的构造方法并不会调用（因为被覆盖了）
-
-用于类的函数：
-issubclass(cls, class_or_tuple)
-判断一个类是否继承其他的类，如果此类cls是class或tuple中的一个派生子类则返回True，否则返回False
-实例：
-class A:
-    pass
-class B(A):
-    pass
-class C(B):
-    pass
-print(issubclass(B, A)) # True
-print(issubclass(B, (int, str))) # False
+    用于类的函数：
+    issubclass(cls, class_or_tuple)
+    判断一个类是否继承其他的类，如果此类cls是class或tuple中的一个派生子类则返回True，否则返回False
+    实例：
+    class A:
+        pass
+    class B(A):
+        pass
+    class C(B):
+        pass
+    print(issubclass(B, A)) # True
+    print(issubclass(B, (int, str))) # False
 
 封装：enclosure
-1、封装的目的是让使用者通过尽可能的省的变量名（或）属性使用对象，
-2、封装是指隐藏类的实现细节，让使用者不关心这些细节。
-3、python不能实现C++等语言完全意义上的封装（是模拟的封装）
+    1、封装的目的是让使用者通过尽可能的省的变量名（或）属性使用对象，
+    2、封装是指隐藏类的实现细节，让使用者不关心这些细节。
+    3、python不能实现C++等语言完全意义上的封装（是模拟的封装）
 
-私有实例变量和方法：
-python 中以双下划线__开头，不以双下划线结尾的标识符为私有变量/方法
-以__开头的实例变量为私有变量，子类和类外部无法直接使用
-以__开头的方法也为私有方法，子类和类外部无法直接使用
+    私有实例变量和方法：
+    python 中以双下划线__开头，不以双下划线结尾的标识符为私有变量/方法
+    以__开头的实例变量为私有变量，子类和类外部无法直接使用
+    以__开头的方法也为私有方法，子类和类外部无法直接使用
 
-实例：
-class A:
-    def __init__(self, v):
-        self.money = v # __money 为私有实例变量
+    实例：
+    class A:
+        def __init__(self, v):
+            self.money = v # __money 为私有实例变量
 
 
 多态

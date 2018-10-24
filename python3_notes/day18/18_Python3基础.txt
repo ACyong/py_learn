@@ -66,7 +66,8 @@
     说明：当没有__bool__(obj)方法时，真值测试将取__len__(self)的返回值来测试布尔值
 
     对象的属性管理函数
-    1、getattr(obj, name[,default]),从一个对象得到对象的属性：getattr(x, 'y') 等同于x.y；当属性不存在时，则产生一个AttributeError错误
+    1、getattr(obj, name[,default]),从一个对象得到对象的属性：getattr(x, 'y') 等同于x.y；
+        当属性不存在时，则产生一个AttributeError错误
     2、hasattr(obj, name) 用给定的name返回对象obj是否有此属性，此做法可以避免getattr(obj, name) 时引发错误
     3、setattr(obj, name, value) 给对象obj的名为name的属性设置相应的值value，setattr(x,'y',v) 等同于x.y = v
     4、delattr(obj,name) 删除对象objname属性，delattr(x, 'y') 等同于del x.y
