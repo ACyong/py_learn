@@ -1,13 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from flask import Flask, url_for
 
-# 1.这个类的实例将会是我 们的 WSGI 应用程序
+
 app = Flask(__name__)
-
-
-# 2.route() 装饰器把一个函数绑定到对应的 URL 上
-@app.route('/')
-def index():
-    return 'Hello World!'
 
 
 # @app.route('/login', methods=['GET', 'POST'])
@@ -50,15 +46,4 @@ with app.test_request_context():
 
 
 if __name__ == '__main__':
-    # 3.run() 函数来让应用运行在本地服务器上
-    # app.run()
-
-    # 4.使服务器公开
-    # app.run(host='0.0.0.0')
-
-    # 5.调试模式两种方法
-    # (1)
-    # app.debug = True
-    # app.run()
-    # (2)
     app.run(debug=True)
