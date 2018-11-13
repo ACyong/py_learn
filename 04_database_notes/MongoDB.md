@@ -1,368 +1,528 @@
-数据库介绍：
-    1、数据的存储：
-        * 内存中：存取速度快，不能长期保存，容量小
-        * 外存储器：存取速度慢，能长期保存数据，容量大
-
-    2、外存储器的存储形式：文件存储，数据库存储
-        文件管理阶段（word，excel，音频，视频）
-            优点：数据可以长期保存
-                 存储容量大
-                 使用比较简单
-            缺点：数据冗余大，数据一致性差，完整性维持困难
-                 查找修改不方便
-
-        数据库管理阶段
-            优点：数据可以长期保存
-                 存储容量大
-                 数据组织结构好
-                 冗余度小
-                 容易扩充
-                 方便程序自动处理
-                 查找修改效率高
-            缺点：难度和专业度相对文件要求较高
-
-    3、数据库的几个概念：
-        数据：能够输入到计算机并被识别和处理的信息集合
-        数据库：是按照数据结构组织、存储和管理的仓库，是在数据库管理系统管理和控制下存放在一定介质上的数据集合
-        数据库管理系统：管理数据库的软件，用于按照一定的方法建立，使用，维护数据库结构内容
-        数据库系统：由数据库，数据库管理系统，开发工具等共同构成的一个集合概念
-
-
-数据库分类：
-    1、关系型数据库
-        采用关系模型来组织数据库的结构的数据库
-        Oracle  DB2  SQLServer  MySql  SqLite(python提供标准化模块，小巧，多用于嵌入式设备)
-        优点：容易理解
-             使用方便，通过sql语句操作，而sql语句是非常成熟的
-             易于维护，完整性好，数据一致性高
-             通用化程度高，使用SQL语句，技术成熟，可以进行外联操作
-
-        缺点：无法很好满足高并发的需求，每次数据操作都需要执行sql语句，对sql进行解析，导致高并发下读写性能不足
-             针对海量数据的爆发，性能不足，因为关系型数据库每一步操作几乎都需要加锁
-             扩展型不足，当数据量达到一定程度的时候不方便扩展
-
-    2、非关系型数据库（NoSQL ---> not only sql）
-        优点：高并发下，读写能力强
-             支持分布式存储，易于拓展
-             弱化数据结构，让数据结构简单
-
-        缺点：缺少join 等复杂的操作
-             通用性差
-             结构灵活也需要更灵活的操作，容易混乱，没有标准的语句
-
-        Nosql适用情况
-            1、数据模型简单
-            2、对数据一致性要求低
-            3、对并发处理要求高
-            4、对数据库扩展由需求
-            5、可以比较方便的以键值方式映射数据值
-
-        面试要求：能够描述关系型数据库和非关系型数据库的优缺点
-
-    3、非关系型数据库分类
-        键值存储数据库
-            Redis， Oracle BDB， Tokyo
-
-        文档型数据库（是键值型数据库的升级版）
-            MongoDB， CouchDB
-
-        列存储数据库
-            HBase
-
-        图形数据库
-
-        * 要求：知道非关系型数据库分为哪几类，mongodb是哪类的
-
-    4、和mysql进行概念对比
-        mysql          mongodb        含义
-        database       database       数据库
-        table          collection     表 / 集合
-        row            document       行、记录 / 文档
-        column         field          列、字段 / 域
-        index          index          索引
-        primary key    primary key    主键
-
-        在mongo中：数据库 包含 多个集合
-                  集合   包含 多条文档
-                  文档中 标明 域及域对应的值
-
-
-MongoDB
-    1、介绍：1、分布式的Nosql
-            2、由C++编写
-            3、是文档型数据库，支持的数据格式松散，类似于字典（Bson）
-            4、最类似于关系型数据库的非关系数据库，应用广泛
-
-    2、特点：高性能，易部署，存储方便
-         支持的查询操作相对其他Nosql要丰富
-         支持的Bson数据格式包含数据类型比较全面
-         支持众多语言的编程接口（ruby、python、c++、c#、php）
-         有很好的扩展性
-
-    3、MongoDB 安装
-        sudo apt-get install mysql-server   # mysql 安装
-        sodo apt-get updata                 # 更新软件源
-        sodo apt-get install mongodb        # 安装mongodb
-        默认安装路径：/var/lib/mongodb
-
-        手动安装：1、下载对应版本的mongodb包 (Linux)
-                 2、将压缩包放到某个目录下（/opt  或  /usr/local）
-                 3、解压压缩包：tar -xvf mongo-linux-x86......-3.4.10.tgz
-                 4、解压后将解压文件夹中的bin目录添加到环境变量，bin中是mongo的相关命令
-                 5、cd /ect            或        cd /ect
-                    sudo vi rc.local             sudo vi bash.bashrc
-                    在 exit 0 前加入
-                    PATH=$PATH:/绝对路径/bin
-                    export PATH
-                 6、reboot 重启
-
-    4、启动mongodb 服务
-        mongod --dbpath /XX/YY    指定数据库路径
-               --port 端口号       指定占用的端口（默认端口为 27017 端口）
-        或：
-        brew services start mongodb    # 启动
-        brew services stop mongodb     # 停止
-        brew services restart mongodb  # 重启
-
-    5、启动mongo shell
-        mongo    进入mongo shell 模式
-        quit()   退出mongo shell
-        注：mongo shell下支持JavaScript代码
-
-    6、数据库的备份和恢复（在终端中输入）
-        备份：mongodump -h dbhost -d dbname -o dbdir
-        实例：mongodump -h 127.0.0.1 -d stu -o python
-
-        恢复：mongorestore -h 127.0.0.1:27017 -d dbname <path>
-        实例：mongorestore -h 127.0.0.1:27017 -d student python/stu
-
-    7、数据库的检测
-        mongostat
-        insert每秒插入次数 query查找 update更新 delete删除
-
-        mongotop
-        检测每个数据库的读写时长
-
-
-库的管理
-    1、数据库的创建
-        use databasename
-        e.g. > use stu    # 创建一个名字为stu的数据库
-        * use 并不会直接创建出数据库，当向数据库中插入数据时数据库才会被真正创建
-        * use 同时还有在多个数据库直接切换的功能
-
-    2、查看数据库：
-        show dbs：显示当前系统中的数据库
-        db：是一个全局量，表示当前正在use的数据库。如果没有进行任何use操作，则表示test（系统自动创建）
-
-    3、数据库命名规则
-        1、数据库的名字可以是满足一下条件的任意 utf-8 字符串
-        2、不能是空字符串
-        3、不能含有：空格(' ')  点('.')  '/'  '\'  '\0'
-        4、应全部小写
-        5、不要超过64字节
-        6、不要使用 admin local config 这三个名字（系统已经定义）
-           admin：用来存储用户和权限的
-           local：不会被复制，只能用于本台服务器访问
-           config：分片处理的时候，保存分片信息
-
-    4、删除数据库
-        db.dropDatabase()    删除db所代表的数据库
-
-
-集合的管理
-    1、集合创建
-        db.createCollection('集合名称')
-        实例：创建一个名字为class2的空集合
-        db.createCollection('class2')
-
-        命名规则：
-            1、不能为空字符串
-            2、不能含有'\0'
-            3、不能以'system.'开头。是系统的保留集合前缀
-            4、集合名称不要和保留字重名，不要包含'$'
-
-    2、创建集合2:
-        当向一个集合中存入一条文档，则集合会被自动创建，这是更加常用的方法
-        db.collect_name.insert()
-        实例：> db.class3.insert({'naem':'lucy', 'age':15, 'sex':'w'})  # 会自动创建class3 这个集合
-
-    3、查看当前use的数据库中的所有集合
-        show collections/tables
-
-    4、修改集合名称
-        db.collectionName.renameCollection(newName)
-        实例：> db.class3.renameCollection('class1')
-
-    5、删除集合
-        db.collectionName.drop()
-        实例：删除class集合
-        db.class.drop()
-
-    文档介绍
-        集合中包含多个文档，集合实际就是文档的集合
-
-        同一集合中文档的设计原则：
-            * 同一类文档应当集中存储，便于管理
-            * 集合中可以使用不同格式的文档
-            * 集合中集中存储格式类似的文档，可以提高访问效率
-
-        文档中对键的要求
-            1、一般来说是 utf-8格式的字符串
-            2、键中不能有'\0'，不能是空字符
-            3、通常不会用 . 和 $
-            4、一般以_开头的键都是系统的保留键，所以尽量不用下划线开头
-
-        文档中值的要求：
-            mongodb 中值是bson格式的数据是json格式进化版，支持的数据类型如下：
-            字符串         utf-8 格式的字符串均为合法
-            整型           32位整型
-            布尔           真 假
-            浮点型         存储小数
-            Arrays        列表或数组
-            Timestamp     时间戳
-            Object        内部文档
-            Null          空值
-            Symbol        同字符串，多用于存储特殊字符
-            Date          日期时间
-            ObjectId      objectid字串
-            Binary data   二进制数据
-            code          代码，js代码
-            regex         正则表达式
-
-
-文档的增
-    插入文档1
-        db.collectionName.insert()
-        注意在插入文档的时候，键可以不加引号
-
-        插入多条数据
-        db.collectionName.insert([{}, {}, {}, {}])
-        实例：
-        > db.class2.find()
-        > db.class2.insert([{中国:'北京'}, {美国:'华盛顿'}, {德国:'柏林'}])
-        * 如果插入时自己设置了_id那么系统则会使用设置的_id值，但是_id仍然为主键，不能重复
-
-    插入文档2
-        db.collectionName.save()
-        1、如果不加_id 进行插入效果同insert()
-        2、如果加_id 进行操作，如果_id值不存在则正常插入，如果存在则修改原文档
-        3、save() 不能同时插入多条数据
-
-    练习1:
-        1、创建一个名为stu 的数据库
-            use stu
-        2、创建一个名为class3 的集合，插入几条记录，域为：name，age，sex，weight，course
-            db.class3.insert([{'name':'lucy', 'age':15, 'sex':'w', weight:85, course:['English', 'Chinese', 'Math', 'music']},
-                             {'name':'lisi', 'age':11, 'sex':'m', weight:48, course:['Chinese', 'Math', 'music']},
-                             {'name':'wang', 'age':18, 'sex':'w', weight:100, course:['English', 'Chinese']},
-                             {'name':'zhang', 'age':10, 'sex':'m', weight:60, course:['Chinese', 'Math']},
-                             {'name':'ming', 'age':12, 'sex':'w', weight:79, course:['English', 'Chinese', 'music']}]
-                            )
-        3、修改集合名class3 为class1
-            db.class3.renameCollection('class1')
-        4、
-
-
-文档的查
-    格式：db.collectionName.find(query, {filed:0/1})
-         db.collectionName.findOne(query, {field:0/1})
-
-    功能：find 查找所有符合条件的文档，不加参数默认查找所有文档
-         findOne 查找第一条符合条件的文档
-
-    参数：query：表示查找条件。相当于mysql中的where语句
-         field声明：展示指定域，其中0表示不显示该域，1表示显示该域。相当于mysql 中select 和from 间的内容。
-                   当设置某几个域值为1，则其他域值默认为0，如：db.class1.find({}, {name:1, age:1})。
-                   当设置某几个域值为0，则其他域值默认为1，_id 始终默认为1，如果不想显示_id 则需要手动设置为0
-                   _id 设置为0时，其他的域可以设置为1；除_id 外其他的普通域0和1不能混合设置
-
-    返回值：返回查找到的结果
-        * 两个参数均以{} 类似字典的方式传入
-        * 如果是空字典，则与不写一样
-
-    实例：> db.class1.find()
-           { "_id" : ObjectId("5a911a5fcb8d853e775289b2"), "naem" : "lucy", "age" : 15, "sex" : "w" }
-              24个十六进制的数用于系统自动生成的_id的（key）
-                前8位文档创建时间
-                6位 机器ID
-                4位 进程ID
-                6位 计数器
-
-    实例：查找所有数据记录
-         db.class1.find() ---> select * from class1;
-
-         查找第一条符合条件的记录
-         db.class1.findOne()
-
-         查找一个name为Lei的同学
-         db.class1.findOne({name:'Lei'}, {_id:0}) --> select * from class1 where name='Lei' limit = 1;
-
-    使用集合定位方法查找：
-        db.getCollection('collectionName').find() --> db.collectionName.find()
-
-
-    1、比较运算符：字符串也可以比较大小，按ascii码值逐个比较
-        $eq  等于
-        实例：查找age等于18的同学
-             db.class1.find({age:{$eq:18}}, {_id:0}) --> db.class1.find({age:18}, {_id:0})
-
-        $lt  小于
-        实例：查找age小于18的同学
-             db.class1.find({age:{$lt:18}}, {_id:0})
-
-        $lte 小于等于
-        实例：查找age小于等于18的同学
-             db.class1.find({age:{$lte:18}}, {_id:0})
-
-        $gt  大于
-        实例：查找age大于17的同学
-             db.class1.find({age:{$gt:17}}, {_id:0})
-
-        $gte 大于等于
-        实例：查找age大于等于17的同学
-             db.class1.find({age:{$gte:17}}, {_id:0})
-
-        $ne 不等于
-        实例：查找age不于等于18的同学
-             db.class1.find({age:{$ne:18}}, {_id:0})
-
-        $in 是否包含
-        实例：查找age包含10，11，17的同学
-             db.class1.find({age:{$in:[10, 11, 17]}}, {_id:0})
-
-        $nin 是否不包含
-        实例：查找age不包含10，11，17的同学
-             db.class1.find({age:{$nin:[10, 11, 17]}}, {_id:0})
-
-    2、逻辑运算符
-        $and  逻辑与（逗号隔开的即为and关系）
-        实例：查找age等于17，name是wang的同学
-             db.class1.find({$and:[{age:17}, {name:'wang'}]}, {_id:0})
-             更常用：db.class1.find({age:17, name:'wang'}, {_id:0})
-
-             查找age大于15，小于18的同学
-             db.class1.find({$and:[{age:{$gt:15}}, {age:{$lt:18}}]}, {_id:0})
-             更常用：db.class1.find({age:{$gt:15, $lt:18}}, {_id:0})
-
-        $or   逻辑与
-        实例：查找age小于18或weight等于85的同学
-             db.class1.find({$or:[{age:{$lt:18}}, {weight:85}]}, {_id:0})
-
-        $not  逻辑非
-        实例：用$not 查找age不小于18的同学
-             db.class1.find({age:{$not:{$lt:18}}}, {_id:0})
-
-        $nor  既不也不
-        实例：查找age既不小于18也不要name为zhang的同学
-             db.class1.find({$nor:[{age:{$lt:18}}, {name:'zhang'}]}, {_id:0})
-
-    3、混合查找实例
-        name = 'Jame' and (age = 12 or age = 13)
-        db.class1.find({name:'Jame', $or:[{age:12}, {age:13}]}, {_id:0})
-
-        age > 13 or (name = 'wang' and sex = 'm')
-        db.class1.find({$or:[{age:{$gt:13}}, {name:'wang', sex:'m'}]})
+## 0.数据库介绍：
+
+- 数据的存储位置：
+```
+内存：存取速度快，不能长期保存，容量小
+外存储器：存取速度慢，能长期保存数据，容量大
+```
+
+- 外存储器的存储形式：文件存储，数据库存储
+```
+文件管理阶段（word，excel，音频，视频）
+    优点：数据可以长期保存
+         存储容量大
+         使用比较简单
+
+    缺点：数据冗余大，数据一致性差，完整性维持困难
+         查找修改不方便
+
+数据库管理阶段
+    优点：数据可以长期保存
+         存储容量大
+         数据组织结构好
+         冗余度小
+         容易扩充
+         方便程序自动处理
+         查找修改效率高
+
+    缺点：难度和专业度相对文件要求较高
+```
+
+- 数据库的几个概念：
+```
+数据：能够输入到计算机并被识别和处理的信息集合
+数据库：是按照数据结构组织、存储和管理的仓库，是在数据库管理系统管理和控制下存放在一定介质上的数据集合
+数据库管理系统：管理数据库的软件，用于按照一定的方法建立，使用，维护数据库结构内容
+数据库系统：由数据库，数据库管理系统，开发工具等共同构成的一个集合概念
+```
+---
+
+## 1.数据库分类：
+
+- 关系型数据库
+```
+采用关系模型来组织数据库的结构的数据库, 如：
+Oracle  DB2  SQLServer  MySql  等数据库
+SqLite(python提供标准化模块，小巧，多用于嵌入式设备)
+
+优点：容易理解
+     使用方便，通过sql语句操作，而sql语句是非常成熟的
+     易于维护，完整性好，数据一致性高
+     通用化程度高，使用SQL语句，技术成熟，可以进行外联操作
+
+缺点：无法很好满足高并发的需求，每次数据操作都需要执行sql语句，对sql进行解析，导致高并发下读写性能不足
+     针对海量数据的爆发，性能不足，因为关系型数据库每一步操作几乎都需要加锁
+     扩展型不足，当数据量达到一定程度的时候不方便扩展
+```
+
+- 非关系型数据库（NoSQL ---> not only sql）
+```
+优点：高并发下，读写能力强
+     支持分布式存储，易于拓展
+     弱化数据结构，让数据结构简单
+
+缺点：缺少join 等复杂的操作
+     通用性差
+     结构灵活也需要更灵活的操作，容易混乱，没有标准的语句
+```
+> 面试要求：能够描述关系型数据库和非关系型数据库的优缺点
+
+- Nosql适用情况
+```
+1、数据模型简单
+2、对数据一致性要求低
+3、对并发处理要求高
+4、对数据库扩展由需求
+5、可以比较方便的以键值方式映射数据值
+```
+
+- 非关系型数据库分类
+```
+键值存储数据库
+    Redis， Oracle BDB， Tokyo
+
+文档型数据库（是键值型数据库的升级版）
+    MongoDB， CouchDB
+
+列存储数据库
+    HBase
+
+图形数据库
+```
+> 要求：知道非关系型数据库分为哪几类，mongodb是哪类的
+
+- MongoDB和关系型数据库的概念对比
+```
+mysql          mongodb        含义
+database       database       数据库
+table          collection     表 / 集合
+row            document       行、记录 / 文档
+column         field          列、字段 / 域
+index          index          索引
+primary key    primary key    主键
+
+在mongo中：数据库包含多个集合
+          集合包含多条文档
+          文档中标明域及域对应的值
+```
+---
+
+## 2.MongoDB
+- 介绍：
+```
+1、分布式的Nosql
+2、由C++编写
+3、是文档型数据库，支持的数据格式松散，类似于字典（Bson）
+4、最类似于关系型数据库的非关系数据库，应用广泛
+```
+
+- 特点：
+```
+1、高性能，易部署，存储方便
+2、支持的查询操作相对其他Nosql要丰富
+3、支持的Bson数据格式包含数据类型比较全面
+4、支持众多语言的编程接口（ruby、python、c++、c#、php）
+5、有很好的扩展性
+```
+---
+
+## 3.MongoDB 安装
+
+- Ubuntu 系统：
+```
+sudo apt-get install mysql-server   # mysql 安装
+sodo apt-get updata                 # 更新软件源
+sodo apt-get install mongodb        # 安装mongodb
+
+默认安装路径：/var/lib/mongodb
+```
+
+- 手动安装(Linux)：
+```
+1、下载对应版本的mongodb包
+2、将压缩包放到某个目录下（/opt  或  /usr/local）
+3、解压压缩包：tar -xvf mongo-linux-x86......-3.4.10.tgz
+4、解压后将解压文件夹中的bin目录添加到环境变量，bin中是mongo的相关命令
+5、cd /ect       sudo vi rc.local
+    或        
+   cd /ect       sudo vi bash.bashrc
+
+   在 exit 0 前加入
+   PATH=$PATH:/绝对路径/bin
+   export PATH
+6、reboot 重启
+```
+
+- Mac 系统：（推荐使用 homebrew 安装）
+```
+brew install mongodb
+```
+---
+
+## 4.启动mongodb 服务
+
+- Linux 系统
+```
+mongod --dbpath /XX/YY    指定数据库路径
+       --port 端口号       指定占用的端口（默认端口为 27017 端口）
+```
+
+- Mac 系统
+```
+brew services start mongodb    # 启动
+brew services stop mongodb     # 停止
+brew services restart mongodb  # 重启
+```
+
+- 启动mongo shell
+```
+mongo    进入mongo shell 模式
+quit()   退出mongo shell
+```
+> 注：mongo shell下支持JavaScript代码
+
+- 数据库的备份和恢复（在终端中输入）
+```
+备份：mongodump -h dbhost -d dbname -o dbdir
+实例：mongodump -h 127.0.0.1 -d stu -o python
+
+恢复：mongorestore -h 127.0.0.1:27017 -d dbname <path>
+实例：mongorestore -h 127.0.0.1:27017 -d student python/stu
+```
+
+- 数据库的检测
+```
+mongostat
+insert每秒插入次数 query查找 update更新 delete删除
+
+mongotop
+检测每个数据库的读写时长
+```
+---
+
+## 5.库的管理
+
+- 数据库的创建
+```
+use databasename
+
+实例：创建一个名字为stu的数据库
+> use stu
+```
+> use 并不会直接创建出数据库，当向数据库中插入数据时数据库才会被真正创建
+, use 同时还有在多个数据库直接切换的功能
+
+- 查看数据库：
+```
+实例：显示当前系统中的数据库
+> show dbs
+```
+> db：是一个全局量，表示当前正在use的数据库。如果没有进行任何use操作，则表示test（系统自动创建）
+
+- 数据库命名规则
+```
+数据库的名字可以是满足以下条件的任意 utf-8 字符串
+    1、不能是空字符串
+    2、不能含有：空格(' ')  点('.')  '/'  '\'  '\0'
+    3、应全部小写
+    4、不要超过64字节
+    5、不要使用 admin local config 这三个名字（系统已经定义）
+```
+> admin：用来存储用户和权限的, local：不会被复制，只能用于本台服务器访问, config：分片处理的时候，保存分片信息
+
+- 删除数据库
+```
+> db.dropDatabase()    # 删除db所代表的数据库
+```
+---
+
+## 6.集合的管理
+
+- 创建集合1
+```
+db.createCollection('集合名称')
+
+实例：创建一个名字为class的空集合
+> db.createCollection('class')
+
+命名规则：
+    1、不能为空字符串
+    2、不能含有'\0'
+    3、不能以'system.'开头。(是系统的保留集合前缀)
+    4、集合名称不要和保留字重名，不要包含'$'
+```
+
+- 创建集合2:
+```
+当向一个集合中存入一条文档，则集合会被自动创建，这是更加常用的方法
+db.collect_name.insert()
+
+实例：自动创建class 这个集合
+> db.class.insert({'naem':'lucy', 'age':15, 'sex':'w'})
+```
+
+- 查看当前`use`的数据库中的所有集合
+```
+> show collections/tables
+```
+
+- 修改集合名称
+```
+db.collectionName.renameCollection(newName)
+
+实例：
+> db.class.renameCollection('class1')
+```
+
+- 删除集合
+```
+db.collectionName.drop()
+
+实例：删除class1集合
+> db.class1.drop()
+```
+---
+
+## 7.文档介绍
+> 集合中包含多个文档，集合实际就是文档的集合
+
+- 同一集合中文档的设计原则：
+```
+同一类文档应当集中存储，便于管理
+集合中可以使用不同格式的文档
+集合中集中存储格式类似的文档，可以提高访问效率
+```
+
+- 文档中对键的要求
+```
+1、一般来说是 utf-8格式的字符串
+2、键中不能有'\0'，不能是空字符
+3、通常不会用 . 和 $
+4、一般以_开头的键都是系统的保留键，所以尽量不用下划线开头
+```
+
+- 文档中值的要求：
+```
+mongodb 中值是bson格式的数据是json格式进化版，支持的数据类型如下：
+字符串         utf-8 格式的字符串均为合法
+整型           32位整型
+布尔           真 假
+浮点型         存储小数
+Arrays        列表或数组
+Timestamp     时间戳
+Object        内部文档
+Null          空值
+Symbol        同字符串，多用于存储特殊字符
+Date          日期时间
+ObjectId      objectid字串
+Binary data   二进制数据
+code          代码，js代码
+regex         正则表达式
+```
+---
+
+## 8.文档的增
+
+- 插入文档1
+```
+db.collectionName.insert()
+注意在插入文档的时候，键可以不加引号
+
+插入多条数据
+db.collectionName.insert([{}, {}, {}, {}])
+
+实例：
+> db.city.insert([{中国:'北京'}, {美国:'华盛顿'}, {德国:'柏林'}])
+> db.city.find()
+> db.city.drop()
+```
+> 如果插入时自己设置了_id那么系统则会使用设置的_id值，但是_id仍然为主键，不能重复
+
+- 插入文档2
+```
+db.collectionName.save()
+
+1、如果不加_id 进行插入效果同insert()
+2、如果加_id 进行操作，如果_id值不存在则正常插入，如果存在则修改原文档
+3、save() 不能同时插入多条数据
+```
+
+- 练习1:
+```
+1、创建一个名为stu 的数据库
+> use stu
+
+2、创建一个名为class 的集合，插入几条记录，域为：name，age，sex，weight，course
+> db.class.insert([
+    {'name':'lucy', 'age':15, 'sex':'w', weight:85, course:['English', 'Chinese', 'Math', 'music']},
+    {'name':'lisi', 'age':11, 'sex':'m', weight:48, course:['Chinese', 'Math', 'music']},
+    {'name':'wang', 'age':18, 'sex':'w', weight:100, course:['English', 'Chinese']},
+    {'name':'zhang', 'age':10, 'sex':'m', weight:60, course:['Chinese', 'Math']},
+    {'name':'ming', 'age':12, 'sex':'w', weight:79, course:['English', 'Chinese', 'music']}
+    ])
+
+3、修改集合名class 为class1
+> db.class.renameCollection('class1')
+```
+---
+
+## 9.文档的查
+
+- 格式：
+```
+db.collectionName.find(query, {filed:0/1})
+db.collectionName.findOne(query, {field:0/1})
+```
+
+- 功能：
+```
+find 查找所有符合条件的文档，不加参数默认查找所有文档
+findOne 查找第一条符合条件的文档
+```
+
+- 参数：
+```
+query：表示查找条件。相当于mysql中的where语句
+field声明：展示指定域，其中0表示不显示该域，1表示显示该域。相当于mysql 中select 和from 间的内容。
+```
+
+> 两个参数均以{} 类似字典的方式传入, 如果是空字典, 则与不写一样
+
+> 当设置某几个域值为1，则其他域值默认为0，如：db.class1.find({}, {name:1, age:1})。当设置某几个域值为0，则其他域值默认为1，_id 始终默认为1，如果不想显示_id 则需要手动设置为0。_id 设置为0时，其他的域可以设置为1；除_id 外其他的普通域0和1不能混合设置
+
+- 返回值：
+```
+返回查找到的结果
+
+实例：
+> db.class1.find({name:'lucy'})
+
+返回值：
+{ "_id" : ObjectId("5a911a5fcb8d853e775289b2"), "name" : "lucy", "age" : 15, "sex" : "w" }
+
+24个十六进制的数用于系统自动生成的_id的（key）:
+    前8位文档创建时间
+    6位 机器ID
+    4位 进程ID
+    6位 计数器
+```
+```
+实例：
+查找所有数据记录
+db.class1.find() ---> select * from class1;
+
+查找第一条符合条件的记录
+db.class1.findOne() ---> select * from class1 where limit=1;
+
+查找一个name为Lei的同学
+db.class1.findOne({name:'Lei'}, {_id:0}) --> select * from class1 where name='Lei' limit = 1;
+```
+
+- 使用集合定位方法查找：
+```
+db.getCollection('collectionName').find() --> db.collectionName.find()
+```
+---
+
+## 10.比较运算符：
+
+> 字符串也可以比较大小，按ascii码值逐个比较
+
+- $eq  等于
+```
+实例：查找age等于18的同学
+db.class1.find({age:{$eq:18}}, {_id:0}) --> db.class1.find({age:18}, {_id:0})
+```
+
+- $lt  小于
+```
+实例：查找age小于18的同学
+db.class1.find({age:{$lt:18}}, {_id:0})
+```
+
+- $lte 小于等于
+```
+实例：查找age小于等于18的同学
+db.class1.find({age:{$lte:18}}, {_id:0})
+```
+
+- $gt  大于
+```
+实例：查找age大于17的同学
+db.class1.find({age:{$gt:17}}, {_id:0})
+```
+
+- $gte 大于等于
+```
+实例：查找age大于等于17的同学
+db.class1.find({age:{$gte:17}}, {_id:0})
+```
+
+- $ne 不等于
+```
+实例：查找age不于等于18的同学
+db.class1.find({age:{$ne:18}}, {_id:0})
+```
+
+- $in 是否包含
+```
+实例：查找age包含10，11，17的同学
+db.class1.find({age:{$in:[10, 11, 17]}}, 
+{_id:0})
+```
+
+- $nin 是否不包含
+```
+实例：查找age不包含10，11，17的同学
+db.class1.find({age:{$nin:[10, 11, 17]}}, 
+{_id:0})
+```
+---
+
+## 11.逻辑运算符
+
+- $and 逻辑与（逗号隔开的即为and关系）
+```
+实例：查找age等于17，name是wang的同学
+db.class1.find({$and:[{age:17}, {name:'wang'}]}, {_id:0})
+
+更常用：
+db.class1.find({age:17, name:'wang'}, {_id:0})
+
+查找age大于15，小于18的同学
+db.class1.find({$and:[{age:{$gt:15}}, {age:{$lt:18}}]}, {_id:0})
+
+更常用：db.class1.find({age:{$gt:15, $lt:18}}, {_id:0})
+```
+
+- $or 逻辑与
+```
+实例：查找age小于18或weight等于85的同学
+db.class1.find({$or:[{age:{$lt:18}}, {weight:85}]}, {_id:0})
+```
+
+- $not 逻辑非
+```
+实例：用$not 查找age不小于18的同学
+db.class1.find({age:{$not:{$lt:18}}}, {_id:0})
+```
+
+- $nor 既不也不
+```
+实例：查找age既不小于18也不要name为zhang的同学
+db.class1.find({$nor:[{age:{$lt:18}}, {name:'zhang'}]}, {_id:0})
+```
+---
+
+## 12.混合查找实例
+```
+name = 'Jame' and (age = 12 or age = 13)
+db.class1.find({name:'Jame', $or:[{age:12}, {age:13}]}, {_id:0})
+
+age > 13 or (name = 'wang' and sex = 'm')
+db.class1.find({$or:[{age:{$gt:13}}, {name:'wang', sex:'m'}]})
+```
+---
 
     4、数组查找  (course的值是一个数组)
         筛选course 数组中包含'chinese' 的文档
