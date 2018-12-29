@@ -1,4 +1,7 @@
-1、继承 inheritance 和 派生 derived
+# Python 面向对象
+
+
+## 1.继承 inheritance 和 派生 derived
     继承的目的是延续旧的类的功能
     派生的目的是在旧的类的基础上添加新的功能
 
@@ -9,7 +12,7 @@
         派生类（derived class）/ 子类（child class）
 
 
-2、单继承：
+## 2.单继承：
     class 类名(超类名)：  # <<<--- 继承列表内可以添加超类
         .......
 
