@@ -145,12 +145,3 @@ in / not in
 
 python3中有四种类型可变类型：list，dict，set，bytearray
 注：可变类型的数据有时可能需要深拷贝： deep copy
-
-
-
-
-
-
-
-
-
