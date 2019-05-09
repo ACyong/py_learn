@@ -1,0 +1,147 @@
+二进制文件：
+    是指文件的操作方式以 “字节”（byte）为单位进行，而不是以“字符”为单位进行操作的，打开模式： 'b'
+
+
+字节串（也叫字节序列）bytes
+    作用：存储以字节为单位的数据
+    说明：字节串是不可变的字节序列
+         每个字节是0～255之间的整数
+
+    创建空的字节串：
+       B = b''
+       B = b""
+       B = b''''''
+       B = b""""""
+       B = bytes()
+
+    创建非空的字节串：
+       B = b'ABCD'
+       B = b"abcd"
+       B = b'\x41\x42'
+       B = bytes([0x41, 0x42, 0x43, 0x44])
+
+    字节串的生成（构造）函数 bytes
+       bytes() 生成空字节串
+       bytes(整型可迭代对象) 用可迭代对象生成一个字节串
+       bytes(整数n) 生成n个值为0的字节串
+       bytes(字符串，encoding = 'utf-8') 用字符串的转换编码生成一个字节串
+
+    bytes 的运算：
+       + += * *=
+       < <= > >= == !=
+       in /not in
+       索引和切片
+    bytes 和str的区别：
+       bytes 存储的是字节（0～255之间的数）
+       str 存储的是Unicode字符（0～65535或0～2**32-1）
+
+    bytes与str转换：
+       str ----> bytes
+          b = s.encode('utf-8')
+       bytes -----> str
+          s = b.decode('utf-8')
+    字符串一定能转换成字节串，字节串要按相同的编码规则才能转换成字符串
+
+    能用于字节串的函数：
+    len max min sum any all
+
+练习：写一个程序，读入一系列字符串，当输入空行结束，把所有字符串以二进制方式写入文件infos.bin
+
+思考：将 seek.bin 的第15个字节之后的b'abcde'修改为：b'ABCDE' b.lower()
+
+
+字节数组 bytearray
+    字节数组是可变的字节序列（相当于可变的bytes）
+    字节数组的创建函数bytearray()
+       bytearray() 创建空的字节数组
+       bytearray(整数)
+       bytearray(可迭代对象)
+       bytearray(字符串, encoding = "utf-8")
+    操作：
+       + += * *=
+       < <= > >= == !=
+       in/not in
+       索引/切片
+          字节数组的索引和切片可以赋值操作，规则等于同列表的索引和切片
+
+    bytearray：
+    B.clear()
+    B.append(n) n为0～255的数
+    B.remove(value)
+    B.reverse()
+    B.decode(encoding = "utf-8")
+    B.find(sub[, start[, end]])
+
+练习：有一个bytearray， ba = bytearray(b'a1b2c3d4')
+     1)、如何得到如下字符中‘1234’ 和‘abcd’
+     2)、将上述bytearray改为：bytearray（b'A1B2C3D4'）
+
+
+python3 最重要的新特性大概要算对文本和二进制数据作了更为清晰的区分，文本总是Unicode，由str 类型表示，二进制数据则由bytes 类型表示，python3 不会以任意隐式的方式混用str 和bytes，正是这使得两者的区分特别清晰，不能拼接字符串和字节串，也无法在字节包里搜索字符串（反之亦然），也不能将字符串传入参数为字节串的函数（反之亦然）
+
+
+标准输入输出文件
+   sys.stdin 标准输入，默认为键盘终端
+   sys.stdout 标准输出，默认为屏幕终端
+   sys.stderr 标准错误输出，默认为屏幕终端
+模块：sys
+   以上三个文件不需要打开和关闭
+Linux/Unix 输入 Ctrl + d 结束输入
+
+练习：写程序，从键盘输入多个人的年龄，姓名，成绩,当姓名为空时结束，保存为二进制文件
+     格式为：姓名，年龄，成绩 \r\n
+     文件名为：infos.csv
+     要求文件内部编码格式为：
+     “gbk”
+     b = s.encode('gbk')
+     f.write(b)
+     尝试在windows下用Excel 打开infos.csv文件
+
+
+编码：
+    国标系列：GB18030、GBK、GB2312  windows常用
+    GB3212-80 包含汉字6763个和682个字符，用两字节编码，范围（A1A1-FEFE）
+    GBK（1995）包含汉字21003个，用两字节编码，范围（8148～FEFE）不含0x7F
+    GB18030-2005 包含汉字27533个，用两字节或四字节进行编码
+
+    国际标准：UNICODE32、UNICODE16  <===>  Unix/Linux/Mac OS X/IOS/Android常用
+    UNICODE
+        UNICODE16 两字节编码（0～65535）
+        UNICODE32 四字节编码（0～4294967295）
+        UTF-8（8-bit Unicode Transformation Format） 跟UNICODE可以互转
+        0000～007F 一字节
+        0080～07FF 两个字节
+        0800～FFFF 三个字节
+        python3 内部编码UNICODE16
+
+    python的编码（encode）字符串           编码转换 （         Unicode        ）
+        'bg2312'                                   |      ^      |      ^
+        'gbk'                                      |      |      |      |
+        'gb18030'                               encode  decode  encode decode
+        'utf-8'                                    |      |      |      |
+        'ascii'                                    ⌄      |      ⌄      |
+                                                     UTF-8          GBK
+                                                注：encode() decode() 括号中加字符集
+
+    编码注释：
+        在源文件的第一行或第二行写入如下内容可以通知解释执行器此下文字的编码方式
+        # -*- coding:gbk -*-
+        # 设置源文件编码格式为：gbk
+      或：
+        # -*- coding:utf-8 -*-
+        # 设置源文件编码的格式为：utf-8
+
+    python3 内部编码是UNICODE，所以在编码转换的时候不需要decode("字符集")，转换编码时只需要 encode("字符集")，返回编码后的字节串
+
+
+序列：
+str，list，tuple，bytes， bytearray
++ += * *=
+< <= > >= == !=
+in / not in
+索引和切片
+
+字典（映射）
+
+python3中有四种类型可变类型：list，dict，set，bytearray
+注：可变类型的数据有时可能需要深拷贝： deep copy

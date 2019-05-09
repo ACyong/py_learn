@@ -1,0 +1,227 @@
+1、时间模块：
+    time：此模块提供了时间相关的函数，且一直可用
+    时间简介：
+        公元纪年：是从0000年1月1日 0时开始
+        计算机元年：是从1970年1月1日 0时开始，此时间为0
+        UTC 时间（coordinated Universal Time）是从Greenwich时间开始计算的
+        DST 时间（Daylight Saving Time）又称夏令时
+    时间元组：
+        时间元组是一个9个元素组成的：
+           四位的年（如1993）
+           月（1-12）
+           日（1-31）
+           时（0-23）
+           分（0-59）
+           秒（0-59）
+           星期几（0-6，周一是0）
+           元旦开始日（1-366）
+           夏令时修正时间（-1， 0 or 1）
+
+    变量：
+        time.timezone 本地区时间与UTC 时间差（秒为单位）
+        time.altzone 本地区夏令时与UTC 时间差
+        time.daylight 是否使用夏令时
+        time.tzname 时区名字元组
+           CST 为中国标准时间（China Standard Time UTC+8:00）
+
+    函数（以时间类型分类）：
+
+            time.time() 返回从计算机元年至当前时间的秒数的浮点数（UTC 时间为准，时间戳）
+            time.sleep(secs) 让程序按给定的秒数的浮点数睡眠一段时间
+
+            time.gmtime([secs]) 将给定的秒数转换为UTC 表达的时间元组对象，不传参数时，获取以UTC 为准表示的当前时间
+            time.localtime([secs]) 将给定的秒数转换为UTC 表达的时间元组对象（以本地时间为准），不传参数时，获取以UTC 为准表示的当前时间
+
+            time.asctime([tuple]) 将时间元组转为日期时间字符串
+            time.mktime(tuple) 将时间元组转换为时间戳（UTC 为准）
+            time.strftime("时间格式化字符串" % [tuple]) 将时间元组转换为给定格式的时间字符串
+        时间格式化字符串：
+            %y 两位数的年份表示（00-99）
+            %Y 四位数的年份表示（000-9999）
+            %m 月份（01-12）
+            %d 月内中的一天（0-31）
+            %H 24小时制小时数（0-23）
+            %I 12小时制小时数（01-12）
+            %M 分钟数（00=59）
+            %S 秒（00-59）
+            %a 本地简化星期名称
+            %A 本地完整星期名称
+            %b 本地简化的月份名称
+            %B 本地完整的月份名称
+            %c 本地相应的日期表示和时间表示
+            %j 年内的一天（001-366）
+            %p 本地A.M.或P.M.的等价符
+            %U 一年中的星期数（00-53）星期天为星期的开始
+            %w 星期（0-6），星期天为星期的开始
+            %W 一年中的星期数（00-53）星期一为星期的开始
+            %x 本地相应的日期表示
+            %X 本地相应的时间表示
+            %Z 当前时区的名称
+            %% %号本身
+
+    练习
+    1.输入生日，算出你已经出生多少天
+        import time
+        x = time.time()
+        g = time.mktime((1995,1,1,0,0,0,0,0,0))
+        print((x - g) // (3600 * 24) + 1)
+
+    1.有一个程序，打印出一个电子时钟，格式为：HH:MM:SS
+        import time
+        def clock():
+            while True:
+                t = time.localtime()
+                h, m, s = t[3:6]
+                print("%02d : %02d : %02d" % (h, m, s), end = "\r")
+                time.sleep(1)
+        clock()
+
+
+2、系统模块 sys
+    用于获取和设置与系统相关的信息
+
+    变量：
+        sys.modules  已加载的模块的字典
+        sys.version  获取Python解释程序的版本信息
+        sys.version_info  版本信息的命名元组
+        sys.bulitin_module_names  获取python内建模块名称（字典串元组）
+        sys.argv  命令行参数List，第一个元素是程序本身路径
+        sys.maxint  最大的Int值
+        sys.path  返回模块的搜索路径，初始化时使用PYTHONPATH环境变量的值
+        sys.platform       返回操作系统平台名称
+
+    函数：
+        sys.exit([args]) 退出程序，正常退出时用sys.exit(0)
+        sys.getrecursionlimit() 得到最大递归嵌套深度
+        sys.setrecursionlimit(n) 设置最大递归嵌套深度
+        sys.stdout.write('please:')
+        val = sys.stdin.readline()[:-1]
+
+        实例：
+            import sys
+            print ("helloA")
+            sys.exit() # 退出当前程序
+            print("helloB")
+
+
+3、os 操作系统模块
+    os.getcwd() 获取当前工作目录，即当前python脚本工作的目录路径
+    os.chdir("dirname")  改变当前脚本工作目录；相当于shell下cd
+    os.curdir  返回当前目录: ('.')
+    os.pardir  获取当前目录的父目录字符串名：('..')
+    os.makedirs('dirname1/dirname2')    可生成多层递归目录
+    os.removedirs('dirname1')    若目录为空，则删除，并递归到上一级目录，如若也为空，则删除，依此类推
+    os.mkdir('dirname')    生成单级目录；相当于shell中mkdir dirname
+    os.rmdir('dirname')    删除单级空目录，若目录不为空则无法删除，报错；相当于shell中rmdir dirname
+    os.listdir('dirname')    列出指定目录下的所有文件和子目录，包括隐藏文件，并以列表方式打印
+    os.remove()  删除一个文件
+    os.rename("oldname","newname")  重命名文件/目录
+    os.stat('path/filename')  获取文件/目录信息
+    os.sep    输出操作系统特定的路径分隔符，win下为"\\",Linux下为"/"
+    os.linesep    输出当前平台使用的行终止符，win下为"\t\n",Linux下为"\n"
+    os.pathsep    输出用于分割文件路径的字符串
+    os.name    输出字符串指示当前使用平台。win->'nt'; Linux->'posix'
+    os.system("bash command")  运行shell命令，直接显示
+    os.environ  获取系统环境变量
+    os.path.abspath(path)  返回path规范化的绝对路径
+    os.path.split(path)  将path分割成目录和文件名二元组返回
+    os.path.dirname(path)  返回path的目录。其实就是os.path.split(path)的第一个元素
+    os.path.basename(path)  返回path最后的文件名。如何path以／或\结尾，那么就会返回空值。即os.path.split(path)的第二个元素
+    os.path.exists(path)  如果path存在，返回True；如果path不存在，返回False
+    os.path.isabs(path)  如果path是绝对路径，返回True
+    os.path.isfile(path)  如果path是一个存在的文件，返回True。否则返回False
+    os.path.isdir(path)  如果path是一个存在的目录，则返回True。否则返回False
+    os.path.join(path1[, path2[, ...]])  将多个路径组合后返回，第一个绝对路径之前的参数将被忽略
+    os.path.getatime(path)  返回path所指向的文件或者目录的最后存取时间
+    os.path.getmtime(path)  返回path所指向的文件或者目录的最后修改时间
+
+
+4、数学模块 math
+    模块名 math
+    变量： math.e   自然对数的底e
+          math.pi   圆周率pi
+    函数：
+        math.ceil(x) 对x向上取整，如 x = 1.2 返回2
+        math.floor(x) 对x向下取整，如 x = 1.2 返回1
+        math.fabs(x) 返回数字的绝对值，如 x = -10 返回10.0
+        math.factorial 返回x的阶乘
+        math.sqrt(x) 返回x的平方根
+        math.modf(x) 返回x的小数部分和整数部分
+        math.exp(x) 返回e的x次幂，如 x = 1 返回2.718281828459045
+        math.log(x[, base]) 返回以base为底x的对数，如果不给出base，则以自然数e为底
+        math.log10(x) 求以10为底的x的对数
+        math.degree(x) 将弧度转换为角度
+        math.radians(x) 将角度转换为弧度
+    三角函数：
+        math.sin(x) 返回x的正弦（x为弧度）
+
+    练习：给出圆周的半径，输入圆的角度，算出扇形的面积
+        import math as m
+
+        s = int(input("输入圆的面积："))
+        r = m.sqrt(s/m.pi)
+        z = m.sqrt(s/m.pi) * m.pi * 2
+
+        print(r, z)
+
+
+5、随机模块 random
+    作用：用于模拟生成随机数据的模块
+    假设：import random as R
+    函数：R.random()  返回一个[0, 1）之间的随机浮点数（不包含1）
+         R.uniform(a, b) 返回[a, b）区间内的随机浮点数
+         R.randrange([start,], stop[, step]) 返回range(start, stop, step)中的随机数，不包含stop
+         R.choice(seq) 从序列中返回随意元素
+         R.shuffle(seq[, random]) 随机指定序列的顺序（乱序序列）
+         R.sample(seq, n) 从序列中选择n个随机且不重复的元素
+         R.randint(start, stop)  随机整数，包含stop
+
+    练习：生成四位随机验证码
+    答案：
+        import random
+
+        checkcode = ''
+        for i in range(0, 4):
+            current = random.randrange(0, 4)
+            if current == i:
+                tmp = chr(random.randint(65, 90))
+            else:
+                tmp = str(random.randint(0, 9))
+
+            checkcode += tmp
+
+        print(checkcode)
+
+
+6、json 模块
+    JSON(JavaScript Object Notation) 是一种轻量级的数据交换格式，易于人阅读和编写。
+
+    实例：序列化：
+        import json
+
+        info = {
+            'name': '庄AC',
+            'age': 22
+        }
+        f = open('text.txt', 'w')
+        print(json.dumps(info))
+        f.write(json.dumps(info))  # 相当于 json.dump(info, f)
+        # f.write(str(info))
+        f.close()
+
+        反序列化：
+        import json
+
+        f = open('text.txt', 'r')
+        # data = eval(f.read())
+        data = json.loads(f.read())  # 相对于 json.load(f)
+        f.close()
+        print(data['name'])
+
+    pickle 模块与json 模块用法一样，只是可序列化python 的数据更加丰富，但不常用
+
+
+7、string 模块
+
+
+8、collections 模块

@@ -1,0 +1,301 @@
+1、函数调用时的参数传递方式：（调用函数）
+    传递方式有以下四种：
+    位置传参
+    序列传参
+    关键字传参
+    字典关键字传参
+
+    （1）位置传参：
+        实际参数(实参)的对应关系与形式参数(形参)对应关系是按位置依次对应的
+        实参的个数和形参的个数要严格一直
+        实例：def myfun1(a, b, c):   # 形参
+                print(a)
+                print(b)
+                print(c)
+              # 调用
+              myfun1(1, 2, 3)   # 实参
+
+    （2）序列传参
+        序列传参是指在函数调用过程中，用*将序列拆解后按位置进行传递的方式
+        序列传参时，序列拆解的位置将与形参一一对应
+        序列的位置信息对应相应的参数
+        实例：# 假设已经有序列可用
+          L1 = [11,22,33]
+          T1 = (4.4,5.5,6.6)
+          S1 = "ABC"
+          myfun1(*L1)
+          myfun1(*T1)
+          myfun1(*S1)
+
+    （3）关键字传参：
+        关键字传参是指传参时，按形参的名称给形参赋值
+        实参和形参按形参名进行匹配（可以不按位置顺序进行匹配）
+        实例：# 关键字传参
+          myfun1(c = 33, b = 22, a = 11)
+
+    （4）字典关键字传参：
+        是指实参为字典，将字典用**拆解后进行关键字传参
+        实例：d1 = {"c":33, "b":22, "a":11}
+             myfun1(**d1)
+        说明：字典的键名和形参名必须一致
+                字典的键名必须为字符串，并符合关键字的命名
+                字典的键名要在形参中存在
+
+    （5）函数的综合
+       传参方式，在能确定每个形参否能唯一匹配一个实参的情况也可以任意传参
+       传参时，位置传参和序列传参要先于关键字传参和字典关键子传参
+       实例： myfun1(100, *[200, 300])
+             myfun1(*[10,20],30)
+             myfun1(*[10], 20, *[30])
+             myfun1(100, **{"c":300, "b":200})
+             myfun1(**{"c":300, "b":200}, a = 100)
+             myfun1(b = 200, c = 300, 100)   # 错的
+
+    练习：
+        1、写一个函数：def mymin(x, y, z):   这个函数传入三个参数，返回三个
+            中最小值，尝试使用四种传参方式？
+
+            答案:
+            def mymin(a, b, c):
+                t = a
+                if t > b:
+                    t = b
+                if t > c:
+                    t = c
+                return t
+
+            print(mymin(1, 2, 3))
+            print(mymin(*[1, 2, 3]))
+            print(mymin(a=1, b=2, c=3))
+            print(mymin(**{'a': 1, 'b': 2, 'c': 3}))
+
+        2、函数参数为可变类型的对象，传参问题
+            L = []
+            def fn(x):
+                L = [x]
+            fn(10)
+            print(L)
+
+            答案：
+            # 创建一个局部变量，但不会修改全局的L变量
+
+    注意传参时：
+       1、不可变类型的数据作为函数参数传入时，函数内部不会改变变量的原数据的值
+       2、可变类型的数据作为函数参数传递时，函数内部可以改变原数据，多用与返回更多函数执行结果
+
+    实例：写一个函数，在函数内输入一些整数，
+          （1）把所有奇数放入全局列表odds中
+          （2）把所有的偶数放入全局的列表evens中
+
+    odds = []
+    evens = []
+    def input_number(o, e):
+        while True:
+            n = int(input("请输入整数："))
+            if n < 0:
+                break
+            # 如果n为奇数则添加列表odds中
+            if n % 2 == 1:
+                o.append(n)
+            else: # 如果n为偶数则添加到列表evens中
+                e.append(n)
+
+    input_number(odds, evens)
+    print(odds)   # 此列表将被修改
+    print(evens)    # 此列表也将被修改
+
+
+2、函数参数的定义规则（创建函数）
+    函数的缺省参数：
+    语法： def 函数名(形参名1 = 默认实参1, 形参名2 = 默认实参2, ....):
+              语句块
+
+    实例：以下示意函数的缺省参数
+    def info(name, age=1, address="未填写"):
+        print(name, "住在：", address, "今年：", age, "岁")
+    info("庄AC", 23,  "北京")
+    info("庄AC", 23)
+
+    说明：（1）缺省参数必须自右至左依次存在，如果一个参数有缺省参数，则其右侧的所有参数都必须有缺省参数
+                如：def test_fn(a, b = 10, c):    # 是错的
+         （2）缺省参数可以有0个或多个，甚至全部都有缺省参数
+
+    练习：写一个函数myadd有三个参数，此函数可以计算两个数的和，也可以计算三个数的和
+    答案：
+    def myadd(a, b, c=0):
+        return a + b + c
+    print(myadd(10, 20))
+    print(myadd(10, 20, 30))
+
+
+3、函数的参数定义方式：
+    位置形参
+    星号元组形参
+    命名关键字形参
+    双星号字典形参
+
+    （1）位置形参语法：
+        def 函数名(形参名1, 形参名2, 形参名3,......):
+            语句块
+
+    （2）星号元组形参语法：
+        def 函数名(*元组形参名):
+            语句块
+
+        作用：收集多余的位置传参
+        实例：
+            def funs(*args):
+                # args绑定一个元组，此元组内的元素是为了剩余的位置传参
+                print("实参个数是：", len(args))
+                print("args绑定", args)
+            funs()  # 以无参调用
+            funs(1, 2, 3, 4)
+            funs("ABC", 1, 2.3, 4+5J)
+
+        练习：写一个函数mysum2，实参可以传入任意个，返回所有实参的和
+            def mysum2(*args):
+                ....
+            print(mysum(1,2,3,4)) #10
+            print(mysum(1,2.2,3+4J)) # (6.2 + 4J)
+        答案：
+            def mysum2(*args):
+                s = 0
+                for x in args:
+                    s += x
+                return s
+            print(mysum2(1, 2, 3, 4))  # 10
+            print(mysum2(1, 2.2, 3+4J))  # (6.2 + 4J)
+
+    （3）命名关键字形参语法：
+        def 函数名(*, 命名关键字形参):
+            语句块
+        或:
+        def 函数名(*args, 命名关键字形参):
+            语句块
+
+        作用：所有的命名关键字形参，必须用关键字传参或字典关键字传参进行参数传递
+        实例：
+            def fn(*, a, b):
+                print("a的值为：", a)
+                print("b的值为：", b)
+            # fn(1, 2)  # 错的，a和b　必须是用关键字传参
+            fn(a = 1, b = 2)  #必须这么传
+            fn(b = 0, a = 20)
+            fn(**{"b":200, "a":100})
+            -----------------------
+            def f2(*args, a, b):
+                print("args=", args)
+                print("a=", a)
+                print("b=", b)
+            f2(1, 2, 3, 4, a=100, b=200)
+            f2(a=100, b=200)
+
+    （4）双星号字典形参语法：
+       def 函数名(**字典形参名):
+           语句块
+
+       作用：收集多余的关键字传参（例如：dict()）,通常只有一个
+       实例：
+           def func(**kwagrs):  # kwagrs绑定一个字典
+               print("参数个数：", len(kwagrs))
+               print("kwagrs的值为：", kwagrs)
+           func(name="zhuang", age=35, address="dgas")
+           func()
+
+    （5）函数参数自左至右的顺序为：
+     位置形参， 星号元组形参， 命名关键字形参， 双星号字典形参
+     实例：
+        def fn(a, b, *args, c, **kwargs):
+            pass
+        fn(100,200,300,400,c=5.5,d=6.6,e=7.7)
+        fn(10,*"AB",20,*{"a":100, "b":200, "c":300})
+
+        # ----------以下函数可以接受任意的位置传参和关键字传参------------
+        def fn(*args, **kwargs):
+
+
+练习：
+    已知内建函数max绑定文档为：max(...)
+    max(iterable) -> value
+    max(arg1, arg2, *arg) -> value
+    仿造max，写一个mymax函数，功能与max完全相同(要求，不允许调用max函数)
+
+    答案：
+    def mymax(a, *args):
+        if len(args) != 0:
+            m = a
+            for x in args:
+                if x > m:
+                    m = x
+        else:
+            m = a[0]
+            for i in range(1, len(a)):
+                if a[i] > m:
+                    m = a[i]
+        return m
+    print(mymax([6, 8, 3, 5]))
+    print(mymax(100, 200))
+
+
+练习：
+    1、写一个myrange函数，参数可以传入1-3个，实际含义同range函数规则相同
+      此函数返回符合range(....)  函数规则的列表
+      如：L = myrange(4)   # L = [0, 1, 2, 3]
+         L = myrange(4, 6)   # L = [4, 5]
+         L = myrange(1, 10, 3)   # L = [1, 4, 7]
+         print(L)   # [1, 4, 7]
+    答案：
+        range(*args, x=1):
+            L = []
+            if len(args) == 1:
+                i = 0
+                while i < args[0]:
+                    L.append(i)
+                    i += x
+            elif len(args) == 2:
+                if args[0] > args[1]:
+                    return L
+                i = args[0]
+                while i < args[1]:
+                    L.append(i)
+                    i += x
+            elif len(args) == 3:
+                i = args[0]
+                x = args[2]
+                while i < args[1]:
+                    L.append(i)
+                    i += x
+            else:
+                return ("TypeError: range expected at most 3 arguments")
+            return L
+
+        print(myrange(5))
+        print(myrange(2, 6))
+        print(myrange(5, 10, 2))
+        print(myrange(5, 5))
+
+    2、写一个函数isprime(x),判断x是否为素数，如果为素数返回True，否则返回False
+    3、写一个函数prime_m2n(m, n)返回从m开始，到n结束内所有的素数的列表
+        如：L = prime_m2n(5, 10)   # L = [5, 7]
+    4、写一个函数primes(n)   返回n范围内的全部素数的列表
+        如：L = print(10)   # L=[2,3,5,7]
+       （1）打印100以内的素数
+       （2）求100000以内的素数有多少个
+    答案：
+        def isprime(x):
+            if x <= 1:
+                return False
+            for i in range(2, x):
+                if x % i == 0:
+                    return False
+            return True
+
+        def primes(start, stop):
+            L = []
+            for a in range(start, stop):
+                if isprime(a):
+                    L.append(a)
+            print(L)
+
+        primes(100, 200)
+

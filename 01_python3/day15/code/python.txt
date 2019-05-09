@@ -1,0 +1,228 @@
+迭代器 Iterator 和生成器 Generator
+    迭代器是指用 iter(obj)函数返回的对象（实例） 间接访问可迭代对象的一种方式
+    迭代器可以用 next(it) 函数依次获取可迭代对象的值
+实例：
+L = [1,3,5,7,9] # L为可迭代对象
+it = iter(L) # it 绑定迭代器
+v = next(it) # v 绑定
+print(v) # 1
+print(next(it)) # 3
+print(next(it)) # 5
+print(next(it)) # 7
+print(next(it)) # next 函数内触发StopIteration异常通知
+说明：
+   迭代器时访问可迭代对象的一种方式（另一种方式for 语句）
+   迭代器只能往前取值，不会后退
+   用iter()函数可以返回一个可迭代对象的迭代器
+
+
+迭代器函数
+iter(iterable) 从可迭代对象中返回一个迭代器，iterable必须是一个可迭代对象
+next(iterable) 从迭代器iterable 中获取下一个记录，如果无法获取下一条记录，则触发StopIteration
+               异常来通知调用者已无数据可提供
+实例：
+
+以前学过的可迭代对象：str、list、tuple、dict、set、frozenset，range()函数返回值，map()函数的返回值，
+                   filter()函数的返回值，sorted()函数返回的是列表，zip，enumerate
+
+生成器：Generator（python2.5 之后）
+生成器是指能够动态提供数据的对象，生成器对象也是可迭代对象
+生成器有两种：
+    生成器函数（只能用for语句和迭代器函数取值，取值时生成器函数才会执行）
+    生成器表达式
+生成器函数：
+    含有yield语句的函数是生成器函数，此函数调用将返回一个生成器对象 yield翻译为生成、产生
+yield语句：
+    语法：yield 表达式
+    说明：yield 用于def 函数中，目的是将此函数作为生成器函数使用
+         yield 用来生成数据，此数据提供迭代器的next（it）函数使用
+
+练习：写一个生成器函数def myinteger(n):
+                       .......
+    此生成器函数可以生成从0开始的一系列整数，到n结束（不包含n）
+it  = iter(myinteger(3))
+print(next(it)) # 0
+print(next(it)) # 1
+print(next(it)) # 2
+for x in myinteger(5):
+    print(x) # 此处打印
+答案：
+def myinteger(n):
+    for x in range(0, n):
+        yield x
+it  = iter(myinteger(3))
+print(next(it)) # 0
+print(next(it)) # 1
+print(next(it)) # 2
+for x in myinteger(5):
+    print(x) # 此处打印
+
+生成器函数说明：
+   生成器函数的调用将返回一个可迭代对象
+   生成器函数调用return 语句会产生一个StopIteration异常
+   生成器函数每次用next() 函数取值时才会执行，遇到yield语句后将停止执行，并返回数据
+
+生成器表达式：generator expression
+语法：(表达式 for 变量 in 可迭代对象 [if 真值表达式])
+     注：[]内的if部分可以省略
+作用：用推导式的形式生成一个新的生成器
+
+实例：
+>>> gen = (x**2 for x in range(5))
+>>> it = iter(gen)
+>>> next(it)
+0
+>>> next(it)
+1
+>>> next(it)
+4
+>>> next(it)
+9
+>>> next(it)
+16
+>>> next(it)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+
+生成器表达式和列表推导式的区别
+    生成器表达式时现用现生成
+    列表推导式会一次性生成很多个数据
+
+
+迭代工具函数
+    迭代工具函数的作用是生成一个个性化的可迭代对象
+    zip(iter[, iter,....]) 返回一个zip对象，此对象用于生成元组，此元组的个数由最小的可迭代对象决定
+    实例：
+        numbers = [10086, 10000, 10010, 95588]
+        names = ['中国移动', '中国电信', '中国联通']
+        for x in zip(numbers, names):
+            print(x)
+    结果：
+        (10086, '中国移动')
+        (10000, '中国电信')
+        (10010, '中国联通')
+
+    enumerate(iterator[, start])
+    生成带索引的枚举对象，返回迭代类型为索引-值对（index, value）的元组，默认索引从零开始，也可以指定start
+    实例：
+        numbers = [10086, 10000, 10010, 95588]
+        names = ['中国移动', '中国电信', '中国联通']
+        # L = [(0, '中国移动'), (1, '中国电信'), (2, '中国联通')]
+        for x in enumerate(names):
+            print(x)
+        # 扩展
+        for no, n in enumerate(names):  # (等同于序列赋值)
+            print(no, " ----->", n)
+    结果：
+        (0, '中国移动')
+        (1, '中国电信')
+        (2, '中国联通')
+        0  -----> 中国移动
+        1  -----> 中国电信
+        2  -----> 中国联通
+
+
+练习：写一个程序，输入任意行文字，当输入空行时结束输入打印带有行号的输出结果
+     如：$ python3 mytest.py
+        请输入：hello
+        请输入：world
+        请输入：bye
+        请输入：<回车>
+        输出如下：
+        第一行：hello
+        第二行：world
+        第三行：bye
+
+
+文件操作
+    文件是指用于数据存储的基本单位，通常用于长期存储数据（任何计算机系统同时打开的文件是有最大数限制的）
+    文件操作的步骤：
+        1、打开文件
+        2、读/写文件
+        3、关闭文件
+
+    文件的打开函数：
+        open(文件名, mode = 'rt', [encoding='字符集']) 打开一个文件，返回文件流对象，如果打开失败则会触发IOError错误
+
+    mode 模式字符的含义：
+        'r' 以只读方式打开（默认）
+        'w' 以只写方式打开, 删除原有文件内容（如果文件不存在则创建此文件并以只写方式打开）
+        'x' 创建一个新文件，并以写模式打开，如果文件已存在，则产生FileExistError错误
+        'a' 以只写方式打开，如果原文件有内容，则追加到文件末尾
+        'b' 以二进制模式打开
+        't' 以文本模式打开（默认）
+        '+' 为更新内容打开一个磁盘文件（可读可写）
+
+    文件常用的方法：
+        F.read([size=-1])  从一个文件流中最多读取size个字符（或字节）中文与英文都占一个字符，默认读取全部
+        F.readline()  读取一行数据，如果到达文件尾则返回空行
+        F.readlines([max_chars = -1])  返回每行字符串的列表，max_chars为最大字符（或字节）数
+        F.write(data)  写一个字符串（或字节串），返回写入的个数
+        F.writelines(lines)  将字符串的列表写入文件
+        F.flush()  把文件写入文件对象的缓存内容写入磁盘
+        F.tell()  返回当前文件流的绝对位置(文件的读写位置是以字节为单位的，一般不对文本文件进行操作)
+        F.seek(offset, whence = 0)  改变数据流的位置，返回新的绝对位置
+               offset 偏移量 （大于0的数，代表向文件末尾方向移动，小于0的数 ，代表向文件头方向移动）
+               whence 相对位置 （0 代表从文件头开始偏移 1 代表从当前位置开始偏移 2 代表从文件尾开始偏移）
+
+    文件的关闭方法：
+    F.close() # F代表open返回的文件流对象
+
+
+练习：先用文本编辑器写一个文件“mynotes.txt” 写入一些数据，写一个程序read_notes.py,读取每一行数据，
+     加上行号后显示在屏幕终端上
+
+练习：写一个程序，从键盘读入一些字符串，当输入空行时结束
+     将以上读入内容写入文件“input.txt”中（）要求：键盘操作和文件内容一致
+
+练习：
+    1、用生成器函数，生成素数，给出起始值为begin和终止值end，此生成器函数为：
+       def myprimes(begin, end):
+       用于生成begin～end 之间的素数（不包含end）
+       L = [x for x in myprimes(10, 20)]
+       print(L) # [11, 13, 17, 19]
+    2、写一个生成器函数，参数为n，生成斐波那契数列的前n个数
+       def fibonacci(n):
+          .......
+       L = [x for x in fibonacci(7)] # L = [1, 1, 2, 3, 5, 8, 13]
+    3、修改之前的学生管理系统，添加保存数据功能菜单中添加功能如下：
+       | 9）保存数据到文件（si.txt）|
+       | 10）从文件中读取数据（si.txt）|
+
+       文件格式为：
+          姓名，年龄， 成绩<回车换行>
+练习：
+    1、现有一个列表alist = ['hello', 'world'], 写一个程序要求实现如下输出：
+       index 0 : hello
+       index 1 : world
+
+    2、写一个程序，要求实现如下功能：
+       1）创建一个文件student_info.txt
+       2) 文件中写入如下两行内容：
+          name:Bob age:30 score:90
+          name:Lucy age:25 score:99
+
+    3、写一个生成器函数myyield(),将练习2中student_info.txt中的两行内容生成一个成器
+       然后用for语句打印这两行内容
+       for x in myyield():
+           print(x)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

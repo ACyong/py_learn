@@ -1,0 +1,257 @@
+1、面向对象编程
+    对象object：
+        对象是指物体和实例，一切皆对象(世界万物是由对象组成的)
+        面向对象是指把一切看成对象(实例)，用程序建立对象和对象的关联关系
+
+    类class：
+        类是用来描述对象的工具，用类可以创建一个或多个同类对象
+
+    如：车（类）----> BYD F6(京A 888888) 实例、物体、对象
+       狗（类）----> 小京巴(户籍号：000001) 对象
+       int（类）----> 100 对象
+
+    dir 内置函数：
+        dir() 函数，传入标识符/数据，可以查看对象内的所有属性及方法
+
+
+2、创建类的语法：
+    class 类名(继承列表):
+        """文档字符串"""
+        实例变量
+        实例方法定义（类内的函数叫方法method）
+        类变量（class variable）
+        类方法（@classmethod）
+        静态方法（@staticmethod）
+
+    作用：可以用类创建一个或多个对象（实现）
+        类内定义的变量和方法能被此类所创建的所有实例共同拥有
+
+    创建对象、实例的表达式
+        语法：类名([创建传参列表])
+        作用：创建这个类的实例对象，并返回此实例对象的引用关系
+
+    实例说明：
+        实例有自己的作用域和名字空间，可以为该实例添加实例变量（也叫属性:attribute）
+        实例可以调用类中的方法
+        实例可以访问类中的变量
+
+    类     |     对象     ， 实例（物体）
+    class  |    object   ， instance
+
+
+3、实例变量：
+    调用语法：
+        实例.变量名
+
+    赋值规则：
+        首次赋值创建变量
+        再次赋值则改变变量的绑定关系
+
+    删除实例变量 del 语句
+        del 对象.实例变量名
+        没有实例变量回去找类变量
+
+    del语句总结：
+        1)删除变量
+        2)删除列表中的元素
+        3)删除字典中的键
+        4)删除对象的实例变量
+
+
+4、实例方法（method）：
+    语法：
+    class 类名(继承列表):
+        def 实例方法名（self，参数1，参数2，.......）
+            """实例方法的文档字符串"""
+            语句块
+
+    说明：
+        实例方法的实质是函数，是定义在类内的函数
+        实例方法的第一个参数代表调用这个方法的实例，一般命名为"self"
+        实例方法属于类的属性
+
+    实例方法的调用语法：
+        实例.实例方法名（调用参数）
+        或
+        类名.实例方法名（实例，调用参数）
+    注：实例方法的调用同函数调用一样是表达式，会返回一个值
+
+
+5、构造方法（初始化）
+    语法格式：
+    class 类名(继承列表)：
+        def __init__(self[,参数列表])：
+            语句块
+
+    注：[]的内容可省略
+    作用：多用于初始化对象的实例变量
+    说明：构造方法名必须为 __init__ 不可改变
+         构造方法会在实例生成时自动调用，且将实例自身通过第一个参数self传入__init__方法
+         构造方法内如果需要return 语句返回，则只能返回None
+
+    实例：
+        class Person(object):
+            """Silly Person"""
+
+            def __new__(cls, name, age):
+                print '__new__ called.'
+                return super(Person, cls).__new__(cls, name, age)
+
+            def __init__(self, name, age):
+                print '__init__ called.'
+                self.name = name
+                self.age = age
+
+            def __str__(self):
+                return '<Person: %s(%s)>' % (self.name, self.age)
+
+        if __name__ == '__main__':
+            piglei = Person('piglei', 24)
+            print piglei
+
+    输出：
+        piglei@macbook-pro:blog$ python new_and_init.py
+        __new__ called.
+        __init__ called.
+        <Person: piglei(24)>
+
+    __init__其实不是实例化一个类的时候第一个被调用的方法。当使用 Persion(name, age) 这样的表达式来实例化一个类时，最先被调用的方法 其实是 __new__ 方法
+    __new__方法接受的参数虽然也是和__init__一样，但__init__是在类实例创建之后调用，而 __new__方法正是创建这个类实例的方法
+
+    __init__ 和 __new__ 最主要的区别在于：
+        1.__init__ 通常用于初始化一个新实例，控制这个初始化的过程，比如添加一些属性， 做一些额外的操作，发生在类实例被创建完以后。它是实例级别的方法。
+        2.__new__ 通常用于控制生成一个新实例的过程。它是类级别的方法。
+
+    __new__方法主要是当继承一些不可变的class时(比如int, str, tuple)，提供了一个自定义这些类的实例化过程的途径
+    实例：
+        class PositiveInteger(int):
+            def __new__(cls, value):
+                return super(PositiveInteger, cls).__new__(cls, abs(value))
+
+        i = PositiveInteger(-3)
+        print i
+
+
+6、预置实例属性：
+    __dict__ 属性 用于绑定保存实例变量的字典
+    实例：
+        class Dog:
+            pass
+        dog1 = Dog()
+        print(dog1.__dict__) # 空字典
+        dog1.kinds = "京巴"
+        print(dog1.__dict__) # {'kinds': '京巴'}
+
+    __class__ 属性 用于绑定创建此实例的类
+    作用：可以借助于此属性创建同类实例
+         可以借助此属性访问类变量和类方法
+    实例：
+        print(dog1.__class__) # 和Dog类绑定的是一样的类 <class '__main__.Dog'>
+        dog2 = dog1.__class__()
+
+    __doc__属性
+        作用：用于绑定类的文档字符串，当没有文档字符串是，绑定None对象
+
+    __slots__属性
+        作用：限定一个类创建的实例、对象只能有固定的实例变量（属性）
+        实例：
+        class Student:
+            """__slots__列表限定此类所创建的对象只能有如下是那个实例变量，
+            不能有其他的实例变量，否则会出错
+            """
+            __slots__ = ["name", "age", "score"]
+
+            def __init__(self, n, a, s):
+                self.name, self.age, self.score = n, a, s
+
+        s1 = Student("name1", 10, 100)
+        print("s1.score = ", s1.score)
+        # s1.csore = 60 # 故意写错
+
+    说明：含有__slots__ 列表的类所创建的实例对象没有__dict__ 属性（即此实例不用字典来存储实例变量）
+
+    练习：创建一个车（Car）类，车的属性有：brand(品牌)、model(型号)、color(颜色)
+         车的方法有：run(speed) 以都少公里的速度行驶
+         infos() 显示车的信息
+
+
+7、类变量：
+    是指在类class 内定义的变量，此变量属于类，不属于此类的实例
+    类变量可以通过该类直接访问
+    类变量可以通过类的实例直接访问
+    类变量可以通过此类的实例的__class__ 属性间接访问
+
+    实例：
+        class Human:
+            home = "地球"  # <---- 此为类变量
+
+            def __init__(self, name):
+                self.name = name
+
+            def infos(self):
+                print(self.name, '的家园是', self.home)
+
+
+        # print("home = ", home) # 出错，没有这个全局变量
+        # 获取类的变量
+        print("Human.home =", Human.home)  # Human.home = 地球
+
+        h1 = Human("小张")
+        h2 = Human("小李")
+
+        h1.infos()  # 小张 的家园是 地球
+        print("h1.home =", h1.home)  # h1.home =  地球
+        print("h1.home =", h1.__class__.home)  # h1.home =  地球
+        print("h1.name =", h1.name)  # h1.name = 小张
+
+        Human.home = "中国"
+        h1.infos()  # 小张 的家园是 中国
+        h2.infos()  # 小李 的家园是 中国
+
+
+8、用于类的函数：
+    isinstance(obj, 类或元组)
+    返回这个对象obj是否某个类的对象，如果是则返回True，否则返回False
+    type(obj) 返回对象的类型，等同于返回obj.__class__
+    实例：
+        class Dog:
+            pass
+        dog1 = Dog()
+        print(isinstance(dog1, Dog)) # True
+        print(isinstance([1,2,3], list)) # True
+        print(isinstance('hello', int)) # False
+
+
+9、类方法和静态方法
+    类方法 @classmethod
+        说明：类方法只能访问类变量的方法** 可以修改类变量
+             类方法需要使用@classmethod装饰器定义
+             类方法的第一个参数的类，约定写为“cls”
+        类方法可以用类直接调用
+        类方法也可以用对象间接调用
+
+        实例：
+            class Human:
+                home = "地球"
+                @classmethod
+                def my_class_method(cls, a):
+                    """这是一个类方法，第一个参数cls为类"""
+                    print(a, "的家园是：", cls.home)
+
+            Human.my_class_method("小张")
+
+    静态方法 @staticmethod
+        静态方法是定义在类内部的方法，只能借助于该类访问
+        静态方法需要用 @staticmethod装饰器定义
+        静态方法写普通函数的定义相同，不需要传入self 和 cls参数
+
+        实例：
+            class A:
+                @staticmethod
+                def myadd(a, b):
+                    return a + b
+
+            print(A.myadd(100, 200))
+            a = A()
+            print(a.method(300, 400))
+

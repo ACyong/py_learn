@@ -1,0 +1,300 @@
+1、Python3 中字符串常用方法：
+    方法 method（仅限于对象内部的函数/行为）
+    方法的调用语法：
+        对象.方法名(参数列表)
+    实例：
+        s = "abc"
+        s.isalpha()   # True字符串是否全为字符
+        s = "a1b2"
+        s.isalpha()   # False
+        if s.isalpha():
+            print("S全为字符！")
+        else:
+            print("S不全为字符！")
+
+    s代表字符串
+        s.isdigit()   判断字符串是否全为数字
+        s.isalnum()   判断字符串是否都是数字或者字母
+        s.isalpha()   判断是否全为字符
+        s.islower()   判断是否全为小写字符
+        s.isupper()   判断是否全为大写字符
+        s.isspace()   判断是否全为空白字符    (空白字符：是指空格，水平制表符(\t),换行符(\n)等不可见字符)
+        s.istitle()   判断字符串是否首字母大写
+
+        s.startswith(prefix[, start[, end]])    判断字符串是否以 prefix 开头，prefix 可以是 tuple 类型
+        s.endswith(suffix[, start[, end]])      判断字符串是否以 suffix 结尾，suffix 可以是 tuple 类型
+
+        s.upper()     生成将英文字符转换为大写的字符串
+        s.lower()     生成将英文字符转换为小写的字符串
+        s.capitalize()   将字符串的第一个字母变成大写,其他字母变小写。
+        s.swapcase()    用于对字符串的大小写字母进行转换。
+        s.title()    将每一个单词的首字母大写，非首字母转换为小写
+
+        s.find(sub[, start[, end]])   获取一个字符串子串 sub 的索引，成功返回第一个字符的下标，失败返回 -1
+        s.rfind(sub[, start[, end]])  返回字符串最后一次出现的位置(从右向左查询)，如果没有匹配项则返回-1
+        s.index(sub[, start[, end]])  获取一个字符串子串 sub 的索引，成功返回第一个字符的下标，失败抛出 ValueError 异常
+        s.rindex(sub[, start[, end]]) 返回子字符串 sub 在字符串中最后出现的位置，如果没有匹配的字符串会报异常
+        s.count(sub[, start[, end]])  获取一个字符串中子串的个数
+        s.replace(old, new[, max])   把字符串中的（old）旧字符串替换成新的字符串，如果指定第三个参数max，则替换不超过max次，如果不指定则全部替换
+
+        s.strip([chars])     返回去掉左右 chars 的字符串，如果没有指定 chars ，默认 chars 为空白
+        s.lstrip([chars])    返回去掉左侧 chars 的字符串，如果没有指定 chars ，默认 chars 为空白
+        s.rstrip([chars])    返回去掉右侧 chars 的字符串，如果没有指定 chars ，默认 chars 为空白
+
+        s.center(width[, fill])   将原字符串居中，左右默认填充空格，width 字符长度，fill代表填充内容
+        s.ljust(width[, fill])    将原字符串居左，左右默认填充空格，width 字符长度，fill代表填充内容
+        s.rjust(width[, fill])    将原字符串居右，左右默认填充空格，width 字符长度，fill代表填充内容
+        s.zfill(width)    width 字符长度，填充内容为0，在输出数值时比较常用
+        s.expandtabs([tabsize])    tabsize 参数默认为8，把字符串中的制表符(tab) 转换为适当数量的空格
+
+    注：使用 replace 方法的时候可以考虑用 count 计算一下子串在字符串中出现的个数
+        在是否包含子串的判定中推荐使用 in 和 not in 操作符
+
+    练习：
+       （1）输入一个字符串，判断其中有几个空格,把空格数打印出来
+            s = input("请输入字符串：")
+            num = s.count(' ')
+            print(num)
+       （2）判断你输入的是否是整数
+            s = input("请输入字符串：")
+            if s.isdigit():
+                print("全是整数")
+            else:
+                print("不是整数")
+       （3）判断你输入是否是浮点数
+            dot_count = s.count('.')  # 返回点的个数
+            s2 = s.replace('.', '')
+
+            if s2.isdigit() and dot_count == 1:
+                print("您输入的是浮点数:", float(s))
+            else:
+                print("您输入的不是浮点数")
+
+
+2、字符串的格式化表达式：
+    运算符： % (占位符)
+    作用：生成一定格式的字符串
+    语法格式: 格式化字符串 % 参数值
+             格式化字符串 % (参数值1, 参数值2，⋯⋯)
+    实例：fmt = "姓名 : %s, 年龄 : %d"
+        s = fmt % ("魏老师", "35")   # "姓名:魏老师, 年龄:35"
+        name = "tarena"
+        age = 15
+        s2 = fmt % (name, age)   # "姓名:tarena,年龄:15"
+
+    格式化字符串中的占位符(%)和类型码
+        %s   字符串（用str函数返回的字符串）
+        %r   字符串（用repr返回的字符串）
+        %c   整数转为单个字符
+        %d   十进制整数
+        %o   八进制整数
+        %x   十六进制整数（字符a-f小写）
+        %X   十六进制整数（字符A-F大写）
+        %e，%E   指数型浮点数（%e 对应e小写，%E对应E大写）
+        %f，%F   浮点数十进制形式
+        %g，%G   十进制浮点数或指数浮点数自动转换
+        %%   等同于一个%字符
+
+    占位符 % 和 类型码 之间的格式语法
+        -   左对齐（默认左对齐）
+        +   显示正负号
+        0   补零（只能在左边补零，左对齐后补零无效）
+        宽度.精度（精度大于宽度，宽度失效）
+        实例："%10d" % 123   # '       123'
+             "%4.2f" % pi   #  3.14
+
+
+3、循环语句：
+    while 语句
+    for 语句
+
+    思考一个问题：
+        如何打印100行hello world！
+        print("hello world!" * 100, end = "")
+
+    while 语句
+    作用：根据一定条件，重复的执行一条或多条语句
+    语法：while 真值表达式:
+            语句块1
+         else:   # 可写可不写
+            语句块2
+
+    语法说明：
+        1、先执行真值表达式，测试布尔值为True或False
+        2、如果真值表达式的值为True，则执行语句块1，然后再返回到第一步，重复进行测试
+        3、如果真值表达式值为为False，则执行else子语句的语句块2，然后结束while语句的执行
+        注：else 部分可以省略，ctrl + c 强行终止程序
+
+    练习：
+        1、输入一个数，用变量x绑定，根据x的值，打印x行 hello world！
+           用while语句来做  快捷注释的方法 ctrl + /
+        2、打印1-20的整数，打印在一行显示，每一个数字之间用一个空格隔开
+           1 2 3 4 5 6 7 8 9 ⋯⋯
+        3、打印1-20的整数，每行打印5个，打印四行，如：
+           1 2 3 4 5
+           6 7 8 9 10
+           ⋯⋯
+           提示if语句可以嵌入 while中
+
+    思考：打印1-20的整数，打印在一行显示，每一个数字之间用一个空格隔开 1 2 3 4 5 6 7 8 9 ⋯⋯  打印十行
+
+
+4、while 语句嵌套
+    嵌套示意：
+        while 真值表达式:
+            ⋯⋯
+            while 真值表达式:
+                ⋯⋯
+            else:
+                ⋯⋯
+            ⋯⋯
+        else:
+            ⋯⋯
+
+   练习：
+       输入一个数，打印指定宽度的正方形
+       如：输入5
+           打印图形：
+              1 2 3 4 5
+              2 3 4 5 6
+              3 4 5 6 7
+              4 5 6 7 8
+              5 6 7 8 9
+           答案：
+           n = int(input("请输入数值："))
+           i = 1
+           while i <= n:
+               j = i + (n-1)
+               x = i
+               while x <= j:
+                   print(x, end=' ')
+                   x += 1
+               else:
+                   print()
+               i += 1
+           else:
+               print("结束!")
+
+
+5、break 语句
+    作用：用于循环语句（while，for）中，用来终止当前循环语句的执行。
+    说明：当break语句执行后，此循环语句的break之后的语句将不再执行
+    break 语句通常和if语句组合使用
+    break 语句终止循环时，循环语句的else子句的语句将不会被执行
+    break 语句只能终止当前循环语句的执行，如果有循环嵌套时，不会
+          跳出嵌套外重循环
+    break 语句只能在循环语句（while，for语句）内部使用，不能用来终止
+          单独的if语句，除非if在循环内嵌套
+
+    实例：1、写一个程序，输入一系列数，把这些数加起来，当输入0时结束
+         2、写一个程序，输入一系列数，把这些数加起来，当输入0时结束最多输入10次
+    答案：
+        s = 0
+        i = 0
+        while i < 10:
+            x = int(input("输入一个数字（输入0结束）："))
+            if x == 0:
+                break
+            s += x
+            i += 1
+        print("和为：", s)
+
+
+6、死循环：
+    死循环是指条件一直成立的循环
+    死循环通常用break语句来终止循环
+    死循环的else子句永远不会执行
+
+
+练习：
+    1、输入三行文字，让这三行文字在一个方框居中显示。注：不要输入中文
+        如输入：
+            hello tarena！
+            my name is weimingze
+            exit
+            显示如下：
+            +--------------------+
+            |    hello tarena!   |
+            |my name is weimingze|
+            |        exit        |
+            +--------------------+
+        答案：
+            s1 = input("请输入第一个字符串：")
+            s2 = input("请输入第二个字符串：")
+            s3 = input("请输入第三个字符串：")
+
+            n1 = len(s1)
+            n2 = len(s2)
+            n3 = len(s3)
+
+            max = n1
+            if max <= n2:
+                max = n2
+            if max <= n3:
+                max = n3
+
+            print("+", "-" * max, "+", sep="")
+            print("|", s1.center(max), "|", sep="")
+            print("|", s2.center(max), "|", sep="")
+            print("|", s3.center(max), "|", sep="")
+            print("+", "-" * max, "+", sep="")
+
+    2、写一个程序
+        输入一个开始整数值用变量begin绑定
+        输入一个结束整数值用变量end绑定
+        打印从begin 到 end（不包括end）的每一个整数，每8个打印在一行内
+        如：
+            请输入开始值：5
+            请输入结束值：100
+            5 6 7 8 9 10 11 12
+            13 14 15 16⋯⋯
+            ⋯⋯
+        答案：
+            begin = int(input("输入ｂｅｇｉｎ："))
+            end = int(input("输入ｅｎｄ："))
+            n = end - begin
+
+            i = 0
+            while i < (n // 8 + 1):
+                j = 0
+                while j < 8:
+                    print(begin, sep=" ", end=" ")
+                    j += 1
+                    begin += 1
+                else:
+                    print()
+                i += 1
+
+    3、写程序用while语句生成如下字符串：
+       （1）“ABCDEFG⋯⋯XYZ”
+       （2）“AaBbCcDdEeFfGg⋯⋯XxYyZz”
+        知识点odr chr while 等
+        答案：
+            n1 = ord('A')
+            n2 = ord('a')
+
+            i = 0
+            while i < 26:
+                print(chr(n1 + i), chr(n2 + i), end = " ")
+                i += 1
+            else:
+                print()
+
+
+练习：
+    1、输入n要求打印出如下图形
+        ******....n
+        ******....n
+        ******....n
+        .*****....n
+        .*****....n
+        n*****....n
+        一个以*组成的变长为n的实心正方形，用while嵌套循环来做
+    2、输入n要求打印出如下图形
+        *******....n
+        *          *
+        *          *
+        *          *
+        .******....n
+        一个以*组成的边长为n的空心正方形，用while嵌套循环来做
+
