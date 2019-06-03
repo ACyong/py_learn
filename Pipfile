@@ -12,6 +12,7 @@ flask-cors = "==2.1.0"
 flask-httpauth = "==2.7.0"
 requests = "==2.18.4"
 twisted = "*"
+jupyter = "1.0.0"
 
 [dev-packages]
 
