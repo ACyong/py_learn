@@ -1,0 +1,650 @@
+名次解释：
+异步io
+epoll
+select
+
+
+1.tornado的基础使用
+    class IndexHandler(RequestHandler):
+        def get(self,**args,**kwargs):
+          self.write('响应内容')
+
+        def post(self,**args,**kwargs):
+          pass
+
+    app = Application([('/',IndexHandler)])
+    server = HTTPServer(app)
+    server.listen(端口号)
+    IOLoop.current().start()  #
+
+
+2. 配置文件的使用
+    1、定义变量 define('变量名称',type=int,default=8888)
+    2、解析配置文件 parse_config_file('配置文件的路径')
+    3、使用变量 options.变量名称
+    配置文件中的内容：变量名称 = 值
+    例如： duankou = 9999
+          db = ['127.0.0.1','3306','root']
+
+
+3.对客户端发起的各种请求的解析
+    1、利用路由列表来响应客户端各种不同的路径的请求
+        app = Application([('/',IndexHandler),
+                           ('/java',JavaHandler),
+                           ('/python',PythonHandler)])
+
+    2、在路由列表中可以使用正则表达式对符合一定模式的路径进行统一的响应
+        app = Application([
+                           ('/',IndexHandler),
+                           ('/java',JavaHandler),
+                           ('/python',PythonHandler),
+                           ('/python/(day[0-9]+)',PythonHandler),
+                           ('/python/(day[0-9]+)/([a-zA-Z0-9]+)',PythonHandler),
+                          ])
+
+        class PythonHandler(RequestHandler):
+            #p1匹配的是路径中第一个正则表达式匹配到的具体内容
+            #p2匹配的是路径中第二个正则表达式匹配到的具体内容
+            #p1,p2需要给默认值
+            def get(self,p1=None,p2=None,**args,**kwargs):
+                self.write('xxx')
+                if p1: self.write('xxxx')
+                if p2: self.write('xxxx')
+
+
+    3、服务器接收客户端传递过来的请求参数
+        get方式传递的请求参数：
+        127.0.0.1:9999/blog?name=abc
+        服务器获取get方式传递的请求参数：
+        name = self.get_query_argument('name',None)
+        name = self.get_query_arguments('name')#[]
+
+        post方式传递的请求参数:
+        参数以键值对的形式放在请求体中。
+        服务器获取post方式传递的请求参数：
+        name = self.get_body_argument('name',None)
+        name = self.get_body_arguments('name')#[]
+
+        self.get_argument理解为
+        self.get_query_arugment+self.get_body_argument
+        self.get_arguments理解为
+        self.get_query_arugments+self.get_body_arguments
+
+    4、服务器解析自定义的请求头
+        没有提供self.get_headers()
+        self.request属性，它引用了一个Tornado提供的HTTPServerRequest对象，该对象中封装了请求的方方面面。
+        通过HTTPServerRequest对象的各种属性，就可以找到我们希望从请求中获取的各种内容。
+        self.request.headers属性值就是请求头的全部内容
+
+        heads = self.request.headers
+        myhead = heads['myhead']
+        yourhead = heads['yourhead']
+
+    5、上传文件
+        客户端：利用表单<form>
+        1. <input type=file name=avatar>
+           avatar=二进制格式的图片内容
+        2. 利用表达上传文件，要为form增加一个属性
+           enctype=multipart/form-data
+
+        服务端：
+           files = self.request.files
+           avatars = files['avatar'] #获得了用户上传的所有
+                                      头像文件
+           for avatar in avatars:
+               avatar有三个属性：
+               avatar['filename']上传的图像文件的名称
+               avatar['content_type']上传的图片文件的类型
+                                    image/jpeg,image/png
+               avatar['body']上传的图片文件的内容(二进制格式)
+
+
+4. 框架中，如何把个人代码和作者已经设计好的代码揉和在一起。
+   结合点是“钩子方法”（必须调用的，但作者设计时会写为空方法）
+
+   在Tornado中，RequestHandler中有如下几个方法：
+       1.set_default_headers
+          让使用者在该方法中来设置默认的响应头
+       2.initialize
+          让使用者接收设计路由列表时传入的初始化参数
+       3.get / post ...
+          让使用者将网络响应内容写入缓冲区
+       4.on_finish
+          让使用者在生成相应内容后，释放必要的资源
+
+
+5. 响应内容主要分为两种：
+   字符串（带HTML标签的字符串）
+   JSON字符串
+
+
+6. 作为响应内容的字符串
+
+6.1 手写Python字符串
+6.2 使用模板
+    可以把模板理解为一个HTML文档
+    可以在HTML文档中插入一些额外的非HTML的内容：
+    变量：{{变量名称}}
+    表达式：{{算术表达式}}，{{函数表达式}}（python内置函数表达式，自定义表达式）
+    语句：{%for blog in blogs%}...{%end%}
+         {%if 条件%}...{%else%}...{%end%}
+
+    模板中出现的各种变量，自定义函数等都需要赋值
+    谁渲染模板，谁来赋值
+    渲染方法：
+    调用继承自RequestHandler的render方法
+    self.render(模板的名称，变量=值，自定义函数=self.xxx)
+
+    使用模板前一定要配置好模板存放的路径：
+    Application([路由列表],template_path='mytemplate')
+    其中mytemplate就是一个用来存放模板文件的文件夹
+
+
+4. 作为响应内容的JSON字符串
+
+4.1 创建一个Python中的字典对象，把响应内容以键值对的形式写在字典中。
+然后调用self.write(字典对象)，写入缓冲区，Tornado框架帮助我们完成从字典到JSON字符串的转换，转换完毕后再作为响应交给客户端。
+4.2 创建一个Python中的字典对象，把响应内容以键值对的形式写在字典中。然后调用json.dumps方法将字典对象转为JSON字符串，然后调用self.write（json字符串）写入缓冲区。为了让客户端（浏览器）可以正确识别这是一个JSON字符串，需要手动设置响应头：
+self.set_header('Content-Type','application/json;charset=UTF8')
+
+
+1. 静态资源的使用
+   一般静态资源包括：图片、CSS、JS、声音、视频...
+
+使用步骤：
+step1: 创建一个保存静态资源文件的文件夹（文件夹名字随意，推荐mystatics）
+step2: 配置静态资源文件
+Application([路由列表],template_path='xxx',static_path='mystatics')
+step3：有两种方式在模板中使用静态资源文件
+第一种方式：手写静态资源所在的完整路径
+<img src = static/images/xxx.jpg>
+<script src=static/js/jquery-xxx.js></script>
+<link rel='stylesheet' href=static/css/bootstrap.css></link>
+static是Tornado的关键字，static代表在step2中配置好的静态资源文件夹。
+
+第二种方式：利用Tornado提供static_url函数帮助加载静态资源
+<img src = {{static_url('images/xxx.jpg')}}>
+<script src={{static_url('js/jquery-xxx.js')}}></script>
+<link rel="stylesheet" href={{static_url('css/bootstrap.css')}}></link>
+
+2 模板中的block（块）
+构建一个公共模板(名字一般为base.html)，公共模板中出现的是所有其它模板都会使用到的公共的HTML标签。其他模板（比如，login.html blog.html）通过继承base.html，可以不用重复去写base.html中已经出现的内容。其他模板中的个性化内容（比如：标题，额外全局CSS，引入的外部JS库等，页面内容）通过在base.html中添加{%block xxx%}{%end%}，嵌入到正确的位置中。
+
+注：模板的继承语法{%extends base.html%}
+
+3 模板中的module（模块）
+
+step1 创建一个文件夹来存放模块文件。该文件夹一定要创建在模板文件夹之下。
+step2 在模块文件夹中创建模块文件(.html)
+step3 将模板中，希望作为模块的内容剪切到模块文件中。
+step4 利用{%module xxx()%}语句，告知模板如何关联模块
+step5 配置Application，在其构造器中传入
+      ui_modules={'xxx':XxxModule}
+step6 创建XxxModule类，继承自UIModule类，重写钩子方法:
+      def render()。该方法的返回值必须是一个字符串，该字符串的内容会填充到模板文件{%module xxx()%}语句所在位置。
+      一般，render方法的返回值应该是一个模块文件变成的字符串。这个转变只要调用UIModule提供的render_string()方法即可完成。
+
+      注意：如果模块中含有变量等内容，本着谁渲染谁赋值的原则，必须在render_string()方法中对模块中变量进行赋值。
+
+使用模块的最大好处在于模块是可以复用的。
+
+4 Tornado针对Javascript做的自动转义
+默认时，Tornado会针对<script>xxx</script>出于安全考虑进行转义，将JS代码转为普通的字符串。
+有时根据业务需要，要关闭Tornado的自动转义功能以运行JS代码，关闭的方式有两种：
+第一种：在Application构造器中添加参数autoescape=None 使用该参数后所有模板中的自动转义都会关闭
+第二种：如果只想针对某一个模板停止自动转义，则只要在该模板的任意位置中添加{%autoescape None%}语句即可。
+注意：如果使用Chrome浏览器的话，即使增加了autoescape=None，也会阻止JS代码的执行，此时还要设置一下请求头中的内容，添加一个键值对：
+self.set_header('X-XSS-Protection',0)
+
+5 设计一下Blog应用需要用到的数据表
+
+用户表tb_user
+
+*ID user_id int primary key auto_increment
+*用户名 user_name varchar(64) not null unique
+*密码 user_password varchar(64) not null
+*头像 user_avatar varchar(256) default null
+昵称
+邮箱
+手机号
+性别
+*城市 user_city varchar(64) not null #beijing shanghai bj sh gz
+*数据记录创建时间 user_createdat datetime default current_timestamp
+*数据记录修改时间（最近一次）user_updatedat datetime default current_timestamp on update current_timestamp
+
+create table if not exists tb_user(
+  user_id int auto_increment,
+  user_name varchar(64) not null,
+  user_password varchar(64) not null,
+  user_avatar varchar(256) default null,
+  user_city varchar(64) not null,
+  user_createdat datetime default current_timestamp,
+  user_updatedat datetime default current_timestamp on update current_timestamp,
+  primary key(user_id),
+  unique(user_name)
+
+) default charset = utf8
+
+自行考虑：
+爱好表(tb_hobby)
+用户爱好表(tb_user_hobby)
+
+博客表tb_blog
+*ID blog_id int primary key auto_increment
+标题 blog_title varchar(128) not null
+正文 blog_content varchar(1024) not null
+博客作者 blog_user_id int not null foreign key references tb_user.user_id
+*数据记录创建时间 blog_createdat datetime default current_timestamp
+*数据记录修改时间（最近一次） blog_updatedat datetime default current_timestamp on update current_timestamp
+
+create table if not exists tb_blog(
+  blog_id int auto_increment,
+  blog_title varchar(128) not null,
+  blog_content varchar(1024) not null,
+  blog_user_id int not null,
+  blog_createdat datetime default current_timestamp,
+  blog_updatedat datetime default current_timestamp on update current_timestamp,
+  primary key(blog_id),
+  foreign key(blog_user_id) references tb_user(user_id) on delete cascade on update cascade
+
+)default charset = utf8
+
+标签表tb_tag
+ID tag_id int primary key auto_increment
+标签名称 tag_name varchar(64) not null
+
+create table if not exists tb_tag(
+
+ tag_id int auto_increment,
+ tag_name varchar(64) not null,
+ primary key(tag_id)
+
+)default charset=utf8
+
+
+博客标签tb_blog_tag
+ID rel_id int primary key auto_increment
+博客ID rel_blog_id int not null fk references tb_blog.blog_id
+标签ID rel_tag_id int not null fk references tb_tag.tag_id
+
+create table if not exists tb_blog_tag(
+  rel_id int auto_increment,
+  rel_blog_id int not null,
+  rel_tag_id int not null,
+  primary key(rel_id),
+  foreign key(rel_blog_id) references tb_blog(blog_id) on delete cascade on update cascade,
+  foreign key(rel_tag_id) references tb_tag(tag_id) on delete cascade on update cascade
+
+)default charset = utf8
+
+评论表tb_comment
+ID comment_id int primary key auto_increment
+评论内容 comment_content varchar(256) not null
+被评论的博客ID comment_blog_id int not null fk ref tb_blog.blog_id
+评论人ID comment_user_id int not null fk ref tb_user.user_id
+*数据记录创建时间 comment_createdat datetime default current_timestamp
+*数据记录修改时间（最近一次）comment_updatedat datetime default current_timestamp on update current_timestamp
+
+create table if not exists tb_comment(
+  comment_id int auto_increment,
+  comment_content varchar(256) not null,
+  comment_blog_id int not null,
+  comment_user_id int not null,
+  comment_createdat datetime default current_timestamp,
+  comment_updatedat datetime default current_timestamp on update current_timestamp,
+  primary key(comment_id),
+  foreign key(comment_blog_id) references tb_blog(blog_id) on delete cascade on update cascade,
+  foreign key(comment_user_id) references tb_user(user_id) on delete cascade on update cascade
+
+
+)default charset=utf8
+
+day4
+1. 向用户表tb_user插入一些数据
+要求：利用SQL语句一条一条数据向表中插入
+     至少有来自3个不同城市的用户，每个城市有2～3个用户
+
+insert into tb_user(user_name,user_password,user_city) values("小姐姐","123","beijing")
+
+2. 删除数据
+
+delete from 数据表 where 条件
+
+delete from tb_user where user_name = "老王"
+
+3. 更新数据
+
+update 数据表 set 字段名=新值 where 条件
+
+update tb_user set user_name="小王" where user_id = 4
+
+4. 查询数据
+
+select 字段 from 数据表 where 条件
+
+select user_name,user_city,user_createdat from tb_user
+
+5. 查询所有beijing或shanghai的用户
+
+select user_name,user_city from tb_user where user_city="beijing" or user_city="shanghai"
+
+select user_name,user_city from tb_user where user_city in ("beijing","shanghai")
+
+6. 查询所有注册时间是2018-4-10 9：08：00至2018-4-10 9:10:00的用户
+
+select user_name,user_createdat from tb_user where user_createdat >"2018-4-10 9：08：00" and user_createdat <"2018-4-10 9：10：00"
+
+select user_name,user_createdat from tb_user where user_createdat between "2018-4-10 9：08：00" and "2018-4-10 9：10：00"
+
+7. 查询最晚注册时间
+
+使用聚合函数：max最大 min最小 avg平均 count计数
+
+select max(user_createdat) from tb_user
+
+
+
+8. 查询每个城市的最晚注册时间
+
+分组 group by
+
+select user_city,max(user_createdat) from tb_user
+group by user_city
+
+9. 查询最晚注册用户
+
+select user_name,user_createdat from tb_user
+where user_createdat = (select max(user_createdat) from tb_user)
+
+10. 查询每个城市的最晚注册用户
+
+MySQL的联合查询
+
+create table t1(
+  cid varchar(10) not null,
+  city varchar(10) not null,
+  primary key(cid)
+
+)default charset = utf8
+
+insert into t1(cid,city) values ('tedu','bj'),('jd','sh'),('tx','sh'),('bd','sh')
+
+create table t2(
+  oid varchar(10) not null,
+  custom_id varchar(10),
+  primary key(oid)
+
+)default charset = utf8
+
+insert into t2(oid,custom_id) values('1','tedu'),('2','tedu'),('3','jd'),('4','jd'),('5','tx'),('6',NULL)
+
+内联接查询 (inner) join
+
+select * from t1 join t2 产生的结果集是一个t1表和t2表的迪卡尔积
+
+在t1和t2的迪卡尔积上进行筛选
+select * from t1 join t2 on t1.cid = t2.custom_id
+
+外联接查询
+左外联接 left (outer) join
+在t1和t2的迪卡尔积上进行筛选后的结果集上才能做外联接
+select * from t1 left join t2 on t1.cid = t2.custom_id
+
+右外联接 right (outer) join
+在t1和t2的迪卡尔积上进行筛选后的结果集上才能做外联接
+select * from t1 right join t2 on t1.cid = t2.custom_id
+
+查询每个城市的最晚注册用户
+
+select user_name,tb_user.user_city,user_createdat,t.user_city,t.late
+
+from tb_user
+
+join (select user_city,max(user_createdat)late from tb_user group by user_city)t
+
+on tb_user.user_city = t.user_city and user_createdat = late
+
+11.向博客表，标签表，博客标签表，评论表中插入数据
+要求：
+  1.不是所有的用户都写博客
+  2.一个用户可以写多篇博客
+  3.不是所有的博客都有标签
+  4.一个博客可以有多个标签
+  5.不是所有的博客都有评论
+  6.一个博客可以有多条评论
+
+12.查询所有博客的作者信息
+select user_name,blog_title
+
+from tb_user
+
+join tb_blog
+
+on blog_user_id = user_id
+
+
+select user_name,group_concat(blog_title)
+
+from tb_user
+
+right join tb_blog
+
+on blog_user_id = user_id
+
+group by user_name
+
+13.查询所有用户信息及其写的blog
+select user_name,group_concat(blog_title)
+
+from tb_user
+
+left join tb_blog
+
+on blog_user_id = user_id
+
+group by user_name
+
+14.查询所有博客的标题和标签信息
+tb_blog tb_tag tb_blog_tag
+
+step1 tb_tag,tb_blog_tag把有标签信息的blog
+具体的标签信息查询出来
+
+select rel_blog_id,tag_name
+
+from tb_tag
+
+join tb_blog_tag
+
+on rel_tag_id = tag_id
+
+step2 改变一下step1查询结果的显示方式
+
+select rel_blog_id,group_concat(tag_name)
+
+from tb_tag
+
+join tb_blog_tag
+
+on rel_tag_id = tag_id
+
+group by rel_blog_id
+
+step 3 tb_blog和step2结果表，查找博客的标题及标签信息
+
+
+select blog_title,gc
+
+from tb_blog
+
+left join (select rel_blog_id,group_concat(tag_name)gc
+
+from tb_tag
+
+join tb_blog_tag
+
+on rel_tag_id = tag_id
+
+group by rel_blog_id)t
+
+on rel_blog_id = blog_id
+
+15. 查询所有博客的标题和标签信息及作者信息
+
+14题的step3 tb_user
+
+
+select blog_title,gc,user_name,user_avatar
+
+from tb_user
+
+join (select blog_title,gc,blog_user_id
+
+from tb_blog
+
+left join (select rel_blog_id,group_concat(tag_name)gc
+
+from tb_tag
+
+join tb_blog_tag
+
+on rel_tag_id = tag_id
+
+group by rel_blog_id)t
+
+on rel_blog_id = blog_id)t2
+
+on blog_user_id = user_id
+
+
+16 查询所有博客的标题和标签信息及作者信息和评论数量
+
+step1 从tb_comment中得到一个评论数量结果集
+
+select comment_blog_id,count(*)
+
+from tb_comment
+
+group by comment_blog_id
+
+step2 15题答案和step1进行联合查询
+
+
+select blog_title,gc,user_name,user_avatar,c
+
+from (select comment_blog_id,count(*)c
+
+from tb_comment
+
+group by comment_blog_id)t3
+
+right join (select blog_title,gc,user_name,user_avatar,blog_id
+
+from tb_user
+
+join (select blog_title,gc,blog_user_id,blog_id
+
+from tb_blog
+
+left join (select rel_blog_id,group_concat(tag_name)gc
+
+from tb_tag
+
+join tb_blog_tag
+
+on rel_tag_id = tag_id
+
+group by rel_blog_id)t
+
+on rel_blog_id = blog_id)t2
+
+on blog_user_id = user_id
+)t4
+
+on comment_blog_id = blog_id
+
+
+17.python<---> pymysql <--->mysql
+使用pymysql与数据库交互的步骤：
+step1 建立与数据库的链接(Connection)
+step2 获取一个游标(Cursor)
+step3 利用游标发送SQL语句
+step4 利用游标获取结果
+
+18 SQL注入攻击
+
+select * from tb_user where user_name="a" or 1=1 or ("1"="1" and user_password="1") or "1"="1"
+
+《SQL注入攻击大全》
+
+19 利用pymysql写SQL语句需要传参数时，要使用pysql提供的占位符，然后将参数以元组的形式提供，并传入cursor.execute()函数，作为第二个参数
+
+        sql='select * ' \
+            'from tb_user ' \
+            'where user_name=%s' \
+            'and user_password=%s'
+
+        params=(username,password)
+
+        cursor.execute(sql,params)
+
+day5
+1.AJAX Asynchrous Javascript and XML
+
+<myxml>
+  <data name=key1>
+     value1
+  </data>
+  <data name = key2>
+     value2
+  </data>
+</myxml>
+
+我觉得J=JSON {'key1':'value1','key2':value2}
+
+2.AJAX技术的实现
+AJAX技术是一个纯浏览器端的技术。
+利用浏览器里面内嵌的浏览器对象XMLHTTPRequest来发送请求到服务器并等候服务器的响应，在等候响应的过程中，浏览器上可以做其他任何的操作。
+
+3.JQuery发送AJAX请求
+1）调用JQuery的ajax()方法
+2）调用时需要传入配置参数。
+
+$.ajax({
+               url:"/check",#请求路径
+                data:{"username":name},#发送请求时携带的参数
+                type:"post",#发送请求的方式
+                datatype:"json",#服务器返回数据的类型
+                async:true,#是否用异步的形式
+                #当服务器正常相应了请求时，调用该函数
+                #函数的参数data是服务器返回的内容（json字符串）
+                success:function (data) {
+                    console.log('success:'+data);
+                },
+                #当服务器未正常相应请求时，调用该函数
+                #函数的参数err是服务器返回的错误信息
+                error:function (err) {
+                    console.log('error:'+err);
+                }
+            });
+
+3）在配置参数中要设置两个回调函数，分别对应服务器正常响应时如何处理结果，服务器未正常响应时如何处理错误。
+
+
+4 AJAX典型应用场合：
+1.注册时用户输入名字的验证
+2.登录时，输入用户名，加载用户注册时使用的头像
+
+5 session的使用
+cookie: 服务器写入到浏览器的键值对
+
+
+
+session:纯cookie技术的增强版。它会向浏览器写入一个键值对
+        键值对的值是一个独一无二的数字，作为该浏览器身份的标识。
+        当浏览器访问服务器时会将该值提交到服务器，服务器根据这个值去寻住保存在服务器上的记录该浏览器历史浏览行为的记录。
+
+为了生成独一无二的数字，可以使用时间戳也可以使用uuid。
+在使用uuid时请注意，不能够直接将uuid作为cookie的值写入到浏览器中，必须经过相应的转换，转换成字符串形式才可以写入。这里一般都采用将uuid转为md5字符串后，写入浏览器。
+
+session的典型应用场景：记录用户的登录状态。
