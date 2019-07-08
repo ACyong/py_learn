@@ -325,10 +325,3 @@ JS 中的模式匹配
         1、replace(substr/regexp,replacement)  作用：使用replacement 替换substr/regexp
         2、match(substr/regexp)  作用：返回满足substr 或regexp 格式的子字符串，将这些字符串们放在数组中进行返回
         3、search(substr/regexp)  作用：返回满足substr/regexp 格式的子字符串第一次出现的下标，如果未找到，则返回-1
-
-
-作业：并发服务器
-     socket 套接字
-     mysql 数据库
-     文件的读写操作
-
