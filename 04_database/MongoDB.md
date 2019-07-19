@@ -1131,3 +1131,7 @@ $gt $gte $lt $lte $ne $nin $eq $in
 ---
 
 rs.slaveOk();
+
+MONGDB_SERVERS = 'mongodb://39.97.162.149:27018/?replicaSet=rs0&' \
+                 'socketTimeoutMS=1000&connectTimeoutMS=1000&socketKeepAlive=true&' \
+                 'w=majority&j=true&readPreference=secondaryPreferred'
