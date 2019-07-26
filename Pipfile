@@ -15,6 +15,7 @@ twisted = "*"
 jupyter = "==1.0.0"
 tornado = "*"
 psycopg2-binary = "*"
+gevent = "*"
 
 [dev-packages]
 
