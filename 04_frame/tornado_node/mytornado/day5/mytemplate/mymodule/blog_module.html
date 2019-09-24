@@ -1,0 +1,49 @@
+<ul type="none" style="width: 80%;margin: 8px auto";>
+        {%for blog in blogs%}
+        <li>
+            <table
+                   cellpadding="8px"
+                   cellspacing="8px"
+                   width="100%">
+                <tr>
+                    <td rowspan="4" width="30%" align="center" valign="top">
+
+                        <table>
+                            <tr>
+                                <td align="center">
+                                    <img width="96px" height="96px"
+                                         {%if blog['avatar']%}
+                                          src= static/images/{{blog['avatar']}}
+                                         {%else%}
+                                          src= static/images/default_avatar.png
+                                         {%end%}
+                                         style="border-radius: 50%;border: solid 1px blue;"></td>
+                            </tr>
+                            <tr>
+                                <td align="center"><p style="width: 100px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">{{blog['author']}}</p></td>
+                            </tr>
+                        </table>
+
+                    </td>
+                    <td>{{blog['title']}}</td>
+                </tr>
+                <tr>
+                    <td>{{blog['tags']}}</td>
+                </tr>
+                <tr>
+                    <td style="min-height: 150px;display: block;">
+                        {{blog['content']}}
+                    </td>
+                </tr>
+                <tr>
+                    {%if blog['comment']%}
+                        <td align="right">评论数量：{{blog['comment']}}</td>
+                    {%else%}
+                        <td align="right">当前没有评论</td>
+                    {%end%}
+                </tr>
+
+            </table>
+        </li>
+        {%end%}
+    </ul>

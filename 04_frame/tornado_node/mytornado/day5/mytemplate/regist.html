@@ -1,0 +1,45 @@
+{%extends base.html%}
+{%block title%}注册{%end%}
+
+{%block head%}
+<script type="text/javascript" src="{{static_url('js/jquery-3.2.1.js')}}"></script>
+
+<script>
+    $(function () {
+
+        var input_regist_name=$('#input_regist_name');
+
+        var span_regist_result = $('#span_regist_result');
+
+        input_regist_name.blur(function () {
+            var name = input_regist_name.val();
+
+            $.ajax({
+               url:"/check",
+                data:{"username":name,"type":"regist"},
+                type:"post",
+                datatype:"json",
+                async:true,
+                success:function (data) {
+                    console.log('success:'+data['msg']);
+                    if(data.msg=='fail'){
+                        span_regist_result.text('该用户名不可使用');
+                    }else{
+                        span_regist_result.text('');
+                    }
+                },
+                error:function (err) {
+                    console.log('error:'+err);
+                }
+            });
+        });
+
+    });
+
+</script>
+
+{%end%}
+
+{%block body%}
+{%module registmodule()%}
+{%end%}

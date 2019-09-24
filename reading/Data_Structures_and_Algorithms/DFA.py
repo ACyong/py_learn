@@ -35,7 +35,7 @@ class DFAFilter(object):
             level[self.delimit] = 0
 
     def parse(self, path):
-        with open(path, encoding='utf-8') as f:
+        with open(path) as f:
             for keyword in f:
                 self.add(str(keyword).strip())
         print(self.keyword_chains)

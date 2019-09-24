@@ -1,0 +1,50 @@
+<ul type="none" style="width: 80%; margin: 8px auto";>
+    {%for blog in blogs%}
+    <li>
+        <table border="1px" cellpadding="8px" cellspacing="8px" width="100%">
+            <tr>
+                <td rowspan="4" width="20%" align="center">
+                    <table>
+                        <tr>
+                            <!--<td align="center"><img src={{static_url('images/default_avatar.png')}} alt="头像" width="96px" height="96px" style="border-radius: 50%; border: #846dff solid 1px"></td>-->
+                            <!--<td align="center"><img src=static/images/default_avatar.png alt="头像" width="96px" height="96px" style="border-radius: 50%; border: #846dff solid 1px"></td>-->
+
+                            <!--<td align="center"><img-->
+                                                        <!--{%if blog['avatar']%}-->
+                                                            <!--src={{static_url('images/' + blog['avatar'])}}-->
+                                                        <!--{%else%}-->
+                                                            <!--src=static/images/default_avatar.png-->
+                                                        <!--{%end%}-->
+                                                            <!--alt="头像" width="96px" height="96px" style="border-radius: 50%; border: #846dff solid 1px"></td>-->
+                            <td align="center"><img
+                                                        {%if blog['avatar']%}
+                                                            src=static/images/{{blog['avatar']}}
+                                                        {%else%}
+                                                            src=static/images/default_avatar.png
+                                                        {%end%}
+                                                            alt="头像" width="96px" height="96px" style="border-radius: 50%; border: #846dff solid 1px"></td>
+                        </tr>
+                        <tr>
+                            <td align="center"><p style="width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{blog['author']}}</p></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>{{blog['title']}}</td>
+            </tr>
+            <tr>
+                <td>{{blog['tags']}}</td>
+            </tr>
+            <tr>
+                <td style="min-height: 150px; display: block">{{blog['content']}}</td>
+            </tr>
+             <tr>
+                 {%if blog['comment']%}
+                     <td align="right">评论数量：{{blog['comment']}}</td>
+                 {%else%}
+                     <td align="right">没有评论</td>
+                 {%end%}
+            </tr>
+        </table>
+    </li>
+    {%end%}
+</ul>

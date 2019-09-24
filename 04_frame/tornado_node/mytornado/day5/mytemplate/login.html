@@ -1,0 +1,44 @@
+{%extends base.html%}
+{%block title%}登录{%end%}
+
+{%block head%}
+    <script src="static/js/jquery-3.2.1.js"></script>
+    <script>
+        $(function () {
+           var input_login_name = $('#input_login_username');
+           var img_login_avatar = $('#img_login_avatar');
+            input_login_name.blur(function () {
+                var name = input_login_name.val();
+                $.ajax({
+
+                    url:"/check",
+                    data:{"username":name,"type":"login"},
+                    type:"post",
+                    datatype:"json",
+                    async:true,
+                    success:function (data) {
+                        var path = data.msg;
+                        img_login_avatar.attr("src","static/images/"+path);
+                    },
+                    error:function (err) {
+                        
+                    }
+
+
+                });
+            });
+        
+        
+        });
+
+
+
+
+    </script>
+
+
+{%end%}
+
+{%block body%}
+    {%module loginmodule()%}
+{%end%}
