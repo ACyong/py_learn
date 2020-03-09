@@ -1,10 +1,12 @@
-基本命令：
-	git init  # 初始化git 仓库
+### 基本命令：
 
-	git add  # 添加到暂存区
-		<filename> ... 	将哪些文件提交到暂存区
-		.	将没有添加到暂存区的文件一起添加进暂存区
+1. git init  # 初始化git 仓库
 
+2. git add  # 添加到暂存区
+```
+    <filename> ... 	将哪些文件提交到暂存区
+    将没有添加到暂存区的文件一起添加进暂存区
+```
 	git commit  # 提交到版本库
 		-m 'message'	编写提交信息
 		-am 'message'	git add 和 git commit -m '' 的结合
@@ -141,3 +143,4 @@ git cherry-pick commitId
 如果有冲突，解决冲突之后：
 git add .
 git cherry-pick --continue
+
