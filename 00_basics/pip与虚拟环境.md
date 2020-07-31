@@ -181,4 +181,6 @@ rmvirtualenv 虚拟环境名称
 
 ## 4、pipenv
 
+没用明白！！！
+
 ## 5、pyenv
