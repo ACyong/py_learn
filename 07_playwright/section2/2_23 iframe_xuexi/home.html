@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+ <h3>双层iframe</h3>
+
+
+     <iframe name="yoyo" src="http://47.108.155.10/login.html" style="height: 300px; width: 100%" frameborder="0"></iframe>
+     <iframe id="iframe-auto" src="down.html" style="height: 300px; width: 100%" frameborder="0"></iframe>
+     <iframe id='yoyo2' src="iframe.html" style="height: 800px; width: 100%" frameborder="0"></iframe>
+
+</body>
+<script>
+    iframe= document.getElementById('iframe-auto')
+    iframe.setAttribute('id', 'iframe-auto'+(Math.random()*10000000).toString().slice(0, 10) )
+</script>
+
+</html>

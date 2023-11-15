@@ -1,0 +1,18 @@
+playwright iframe 相关
+1.什么是 iframe
+   本质  html 嵌套 html
+2.iframe 的定位
+   name/id src
+   id 动态的如何定位？
+
+3.iframe 属性   name, url
+    name 属性  id or name
+
+4.iframe 上元素的操作
+   fill  click
+5.iframe 上事件的监听  page.on()
+   alert
+6.iframe 上执行 js 脚本
+   frame.evaluate(js)
+   page.evaluate(主页面切换到frame上的js)
+
