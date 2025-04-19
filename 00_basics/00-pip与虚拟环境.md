@@ -183,4 +183,9 @@ rmvirtualenv 虚拟环境名称
 
 没用明白！！！
 
-## 5、pyenv
+## 5、pyenv (目前本人使用的方案)
+> pyenv 是一个python 版本管理工具，能够在同一台机器上安装多个python 版本，并且可以在不同的项目中使用不同的python 版本
+> pyenv 还可以和virtualenv 结合使用，创建不同版本的python 虚拟环境
+
+- 安装pyenv：
+参考：https://github.com/pyenv/pyenv & https://github.com/pyenv-win/pyenv-win

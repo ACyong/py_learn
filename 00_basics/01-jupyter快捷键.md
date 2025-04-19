@@ -1,5 +1,12 @@
 # Jupyter Notebook 的快捷键
 > Jupyter Notebook 有两种键盘输入模式。编辑模式，允许你往单元中键入代码或文本；这时的单元框线是绿色的。命令模式，键盘输入运行程序命令；这时的单元框线是灰色。
+```
+# 安装jupyter
+pip install jupyter
+
+# 启动jupyter
+jupyter notebook
+```
 
 命令模式 (按键 Esc 开启)
 ```
